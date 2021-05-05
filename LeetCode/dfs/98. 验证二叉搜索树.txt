@@ -1,0 +1,88 @@
+note:
+1. dfs
+2. 如果该二叉树的左子树不为空，则左子树上所有节点的值均小于它的根节点的值； 若它的右子树不空，则右子树上所有节点的值均大于它的根节点的值；它的左右子树也为二叉搜索树。
+3. 注意dfs使用long long的参数范围来规避用例里面可能存在的特殊输入：INI_MIN INI_MAX的边界问题
+mine:
+class Solution {
+public:
+	bool dfs(TreeNode *node, long long minVal, long long maxVal)
+	{
+		if (node->left == nullptr && node->right == nullptr) {
+			return true;
+		}
+		bool leftFlag = true;
+		bool rightFlag = true;
+		if (node->left != nullptr) {
+			// 如果左子树的值>=根节点值 || 左子树值 <= 范围值最小值 则返回false
+			if (node->left->val >= node->val || node->left->val <= minVal) {
+				return false;
+			} else {
+			// 否则：刷新范围值最大值为node->val
+				leftFlag = dfs(node->left, minVal, node->val);
+			}
+		}
+		if (node->right != nullptr) {
+			// 如果右子树的值<=根节点值 || 右子树值 >= 范围值最大值 则返回false
+			if (node->right->val <= node->val || node->right->val >= maxVal) {
+				return false;
+			}
+			// 否则：刷新范围值最小值为node->val
+			else {
+				rightFlag = dfs(node->right, node->val, maxVal);
+			}
+		}
+		// 左子树和右子树都为true才返回true
+		return (leftFlag && rightFlag);
+	}
+	bool isValidBST(TreeNode* root) {
+		return dfs(root, LLONG_MIN, LLONG_MAX);
+	}
+};
+
+code:
+class Solution {
+public:
+    bool helper(TreeNode* root, long long lower, long long upper) {
+        if (root == nullptr) {
+            return true;
+        }
+		// 如果当前节点值不在上下限范围内 则返回false
+        if (root -> val <= lower || root -> val >= upper) {
+            return false;
+        }
+		// 对于左子树来将 当前根节点就是后面左子树的上限upper; 对于右子树来讲 当前根节点就是后面右子树的下限lower
+		// 左子树和右子树都为true才返回true
+        return helper(root -> left, lower, root -> val) && helper(root -> right, root -> val, upper);
+    }
+    bool isValidBST(TreeNode* root) {
+        return helper(root, LONG_MIN, LONG_MAX);
+    }
+};
+
+note:
+1.中序遍历
+
+code：
+class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        stack<TreeNode*> stack;
+        long long inorder = (long long)INT_MIN - 1;
+
+        while (!stack.empty() || root != nullptr) {
+            while (root != nullptr) {
+                stack.push(root);
+                root = root -> left;
+            }
+            root = stack.top();
+            stack.pop();
+            // 如果中序遍历得到的节点的值小于等于前一个 inorder，说明不是二叉搜索树
+            if (root -> val <= inorder) {
+                return false;
+            }
+            inorder = root -> val;
+            root = root -> right;
+        }
+        return true;
+    }
+};
