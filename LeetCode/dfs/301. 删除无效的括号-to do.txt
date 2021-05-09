@@ -1,0 +1,76 @@
+note:
+1.backtrack
+
+mine:
+class Solution {
+public:
+	set<string> result;
+	bool IsStrValid(string s, set<int> delIndex)
+	{
+		stack<int> leftParentheses;
+		for (int index = 0; index < s.size(); ++index) {
+			if (delIndex.find(index) != delIndex.end()) {
+				continue;
+			}
+			if (s[index] == '(') {
+				leftParentheses.push(index);
+			}
+			if (s[index] == ')') {
+				if (leftParentheses.empty()) {
+					return false;
+				}
+				leftParentheses.pop();
+			}
+		}
+		return leftParentheses.empty();
+	}
+	void FillValidResult(string s, set<int> delIndex)
+	{
+		string tempResult;
+		int startIndex = 0;
+		for (auto iter = delIndex.begin(); iter != delIndex.end(); ++iter) {
+			int len = *iter - startIndex;
+			tempResult += s.substr(startIndex, len);
+			startIndex = *iter + 1;
+		}
+		tempResult += s.substr(startIndex, s.size() - startIndex);
+		result.insert(tempResult);
+	}
+	bool BackTrack(string s, int index, int delNum, set<int> &delIndex)
+	{
+		if (delNum == 0) {
+			if (IsStrValid(s, delIndex)) {
+				FillValidResult(s, delIndex);
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		bool validFlag = false;
+		for (int startIndex = index + 1; startIndex < s.size(); ++startIndex) {
+			delIndex.insert(startIndex);
+			if (BackTrack(s, startIndex, delNum - 1, delIndex)) {
+				validFlag = true;
+			}
+
+			delIndex.erase(startIndex);
+		}
+		return validFlag;
+	}
+	vector<string> removeInvalidParentheses(string s) {
+		vector<string> finalResult;
+		int delNum = 0;
+		set<int> delIndex;
+		while (delNum <= s.size()) {
+			if (BackTrack(s, -1, delNum, delIndex)) {
+				break;
+			}
+			delNum++;
+		}
+		for (auto iter : result) {
+			finalResult.push_back(iter);
+		}
+		return finalResult;
+	}
+};
