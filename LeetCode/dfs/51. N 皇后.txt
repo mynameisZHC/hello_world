@@ -1,0 +1,58 @@
+note:
+1.backtrack
+
+code:
+class Solution {
+public:
+	vector<vector<pair<int, int>>> result;
+	bool IsValid(int rowIndex, int colIndex, const vector<pair<int, int>> &quePos)
+	{
+		for (auto iter = quePos.begin(); iter != quePos.end(); ++iter) {
+			// 行 列 
+			if (iter->first == rowIndex || iter->second == colIndex) {
+				return false;
+			}
+			// 斜线
+			if (abs(iter->first - rowIndex) == abs(iter->second - colIndex)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void BackTrack(int n, int rowIndex, vector<pair<int, int>> &quePos)
+	{
+		// 终止条件 遍历到最后一行下一行
+		if (rowIndex == n) {
+			result.emplace_back(quePos);
+			return;
+		}
+		// 遍历不同列 选出符合条件的列进行回溯
+		for (int colIndex = 0; colIndex < n; ++colIndex) {
+			if (!IsValid(rowIndex, colIndex, quePos)) {
+				continue;
+			}
+			quePos.emplace_back(make_pair(rowIndex, colIndex));
+			BackTrack(n, rowIndex + 1, quePos);
+
+			quePos.pop_back();
+		}
+	}
+	vector<vector<string>> solveNQueens(int n) {
+		// 用quePos来记录已经摆放的queen的位置 类似于visit数组
+		vector<pair<int, int>> quePos;
+		// 一行一行往下遍历
+		BackTrack(n, 0, quePos);
+		vector<vector<string>> finalResult;
+		int resultSize = result.size();
+		for (int loop = 0; loop < resultSize; ++loop) {
+
+			vector<string> tempResult(n, string(n, '.'));
+			for (auto pos : result[loop]) {
+				tempResult[pos.first][pos.second] = 'Q';
+			}
+			finalResult.emplace_back(tempResult);
+		}
+		return finalResult;
+	}
+};
