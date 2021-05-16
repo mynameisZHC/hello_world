@@ -1,0 +1,49 @@
+note:
+1.bfs visit
+
+code:
+class Solution {
+public:
+	int openLock(vector<string>& deadends, string target) {
+		string startStr = "0000";
+		// visit:遍历过的节点不再继续遍历 
+		set<string> visit;
+		queue<string> que;
+		// deadends和遍历过的visit效果一样 所有可以先插入visit
+		for (auto deadItem : deadends) {
+			visit.insert(deadItem);
+		}
+		que.push(startStr);
+		int level = 0;
+		while (!que.empty()) {
+			int levelSize = que.size();
+			for (int loop = 0; loop < levelSize; ++loop) {
+				string frontStr = que.front();
+				que.pop();
+				if (frontStr == target) {
+					return level;
+				}
+				if (visit.find(frontStr) != visit.end()) {
+					continue;
+				}
+				visit.insert(frontStr);
+				for (int index = 0; index < 4; index++) {
+					string tempStraAdd = frontStr;
+					string tempStrSubtract = frontStr;
+					// +操作
+					tempStraAdd[index] = (tempStraAdd[index] == '9') ? '0' : tempStraAdd[index] + 1;
+					// -操作
+					tempStrSubtract[index] = (tempStrSubtract[index] == '0') ? '9' : tempStrSubtract[index] - 1;
+					if (visit.find(tempStraAdd) == visit.end()) {
+						que.push(tempStraAdd);
+					}
+					if (visit.find(tempStrSubtract) == visit.end()) {
+						que.push(tempStrSubtract);
+					}
+				}
+			}
+			++level;
+		}
+		return -1;
+	}
+};
