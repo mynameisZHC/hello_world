@@ -1,5 +1,6 @@
 note:
 1.bfs
+2.visit备忘录
 
 code:
 class Solution {
@@ -20,10 +21,12 @@ public:
 		queue<int> que;
 		que.push(n);
 		int level = 0;
+        	// visit数组用来记录入过队列的数字 
+		set<int> visit;
 		while (!que.empty())
 		{
 			level++;
-            // que的size提前获取 因为下面que会有pop的动作
+			// que的size提前获取 因为下面que会有pop的动作
 			int queSize = que.size();
 			for (int loop = 0; loop < queSize; ++loop) {
 				int value = que.front();
@@ -35,8 +38,9 @@ public:
 					else if (value < *iter) {
 						break; // set是按由小到大的排序 所以value < *iter 就不用比较后面的了
 					}
-					else {
+					else if (visit.find(value - *iter) == visit.end()){ // 前面入过队列的数字再出现就不用再入队列进行计算了
 						que.push(value - *iter);
+						visit.insert(value - *iter);
 					}
 				}
 			}
