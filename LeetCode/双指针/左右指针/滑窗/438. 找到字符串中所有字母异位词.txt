@@ -1,0 +1,92 @@
+note:
+1.滑窗
+2.const map 不能使用[] 只能使用at函数或者把const 去掉
+3.注意使用map(unordered_map)时 什么时候用count 什么时候用[]
+
+模板写法
+code:
+class Solution {
+public:
+	vector<int> findAnagrams(string s, string p) {
+		vector<int> result;
+		unordered_map<char, int>need;
+		unordered_map<char, int>window;
+		int left = 0;
+		int right = 0;
+		int valid = 0;
+		for (auto ch : p) {
+			need[ch]++;
+		}
+		const int windowSize = p.size(); 
+		while (right < s.size()) {
+			char rightChar = s[right];
+			right++;
+			if (need.count(rightChar) != 0) {
+				window[rightChar]++;
+				if (need[rightChar] == window[rightChar]) {
+					valid++;
+				}
+			}
+			// 只有在滑窗大小等于P时进行收缩 保持滑窗大小一直等于P
+			if (right - left == windowSize) {
+				if (valid == need.size()) {
+					result.emplace_back(left);
+				}
+				char leftChar = s[left];
+				left++;
+				if (need.count(leftChar) != 0) {
+					if (need[leftChar] == window[leftChar]) {
+						valid--;
+					}
+					window[leftChar]--;
+				}
+			}
+		}
+		return result;
+	}
+};
+
+一般写法：
+code:
+class Solution {
+public:
+	bool IsMatchCondition(const unordered_map<char, int> &need, unordered_map<char, int> &window)
+	{
+		for (auto iter = need.begin(); iter != need.end(); ++iter) {
+			if (window[iter->first] != iter->second) {
+				return false;
+			}
+		}
+		return true;
+	}
+	vector<int> findAnagrams(string s, string p) {
+		vector<int> result;
+		unordered_map<char, int>need;
+		unordered_map<char, int>window;
+		int left = 0;
+		int right = 0;
+		for (auto ch : p) {
+			need[ch]++;
+		}
+		const int windowSize = p.size();
+		while (right < s.size()) {
+			char rightChar = s[right];
+			right++;
+			if (need.count(rightChar) != 0) {
+				window[rightChar]++;
+			}
+
+			if (right - left == windowSize) {
+				if (IsMatchCondition(need, window)) {
+					result.emplace_back(left);
+				}
+				char leftChar = s[left];
+				left++;
+				if (need.count(leftChar) != 0) {
+					window[leftChar]--;
+				}
+			}
+		}
+		return result;
+	}
+};

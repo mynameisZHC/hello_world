@@ -1,0 +1,30 @@
+note:
+1.滑窗
+
+code:
+class Solution {
+public:
+
+	int lengthOfLongestSubstring(string s) {
+		unordered_map<char, int>window;
+		int left = 0;
+		int right = 0;
+		int maxLen = 0;
+		while (right < s.size()) {
+			char rightChar = s[right];
+			right++;
+			window[rightChar]++;
+
+			// 当 window[rightChar] 值大于 1 时，说明窗口中存在重复字符，不符合条件，就该移动 left 缩小窗口
+			while (window[rightChar] > 1) {
+				
+				char leftChar = s[left];
+				left++;
+				window[leftChar]--;
+			}
+			// 结果更新应该在窗口中没有重复字符的时候 即上面那个while循环结束之后
+			maxLen = max(maxLen, right - left);
+		}
+		return maxLen;
+	}
+};

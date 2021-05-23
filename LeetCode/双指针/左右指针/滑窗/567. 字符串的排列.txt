@@ -1,0 +1,82 @@
+note:
+1.滑窗
+2.创建两个26字符对应的哈希表
+
+模板解法
+code:
+class Solution {
+public:
+bool checkInclusion(string t, string s) {
+	unordered_map<char, int> need, window;
+	for (char c : t) need[c]++;
+
+	int left = 0, right = 0;
+	int valid = 0;
+	while (right < s.size()) {
+		char c = s[right];
+		right++;
+		// 进行窗口内数据的一系列更新
+		if (need.count(c)) {
+			window[c]++;
+			if (window[c] == need[c])
+				valid++;
+		}
+
+		// 判断左侧窗口是否要收缩
+		if (right - left == t.size()) {
+			// 在这里判断是否找到了合法的子串
+			if (valid == need.size())
+				return true;
+			char d = s[left];
+			left++;
+			// 进行窗口内数据的一系列更新
+			if (need.count(d)) {
+				if (window[d] == need[d])
+					valid--;
+				window[d]--;
+			}
+		}
+	}
+	// 未找到符合条件的子串
+	return false;
+}
+};
+
+一般写法 
+code:
+class Solution {
+public:
+	bool matchArrs(int* arr1, int* arr2)
+	{
+		for (int loop = 0; loop<26; ++loop) {
+			if (arr1[loop] != arr2[loop]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool checkInclusion(string s1, string s2) 
+	{
+		if (s1.size() > s2.size()) {//注意处理特殊输入
+			return false;
+		}
+		bool resultFlag = false;
+		//创建两个26字符对应的哈希表
+		int arr1[26] = {};
+		int arr2[26] = {};
+		for (int loop = 0; loop < s1.size(); ++loop) {//小写字母最小ascii码的是'a' 每一个元素-'a'来得到相应的索引
+			arr1[s1[loop] - 'a']++;
+			arr2[s2[loop] - 'a']++;
+		}
+		for (int index = 0; index < s2.size() - s1.size(); ++index) {
+			if (matchArrs(arr1, arr2)) {
+				resultFlag = true;
+				break;
+			}
+			arr2[s2[index] - 'a']--;//尾部元素对应值--
+			arr2[s2[index + s1.size()] - 'a']++;//头部元素对应值++
+		}
+		return matchArrs(arr1,arr2);//s1在s2最尾部时(包含s1.size() == s2.size())需要使用这个来进行判断
+	}
+};

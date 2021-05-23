@@ -1,0 +1,23 @@
+note:
+1.快慢指针
+2.对指针的判空处理要全面
+
+code:
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode *slowPtr = head;
+        ListNode *fastPtr = head;
+		// slowPtr肯定在fastPtr后面 所以只需要判断fastPtr就行
+		// 15行的操作是 fastPtr = fastPtr->next->next; 所以既要判fastPtr是否为空 也需要判fastPtr->next是否为空
+        while (fastPtr != nullptr && fastPtr->next != nullptr) {
+            slowPtr = slowPtr->next;
+            fastPtr = fastPtr->next->next;
+			// 判相等放在指针移动过后 防止第一次进来就直接相等
+            if (slowPtr == fastPtr) {
+                return true;
+            }
+        }
+        return false;
+    }
+};

@@ -1,0 +1,30 @@
+note:
+1.快慢指针
+
+code:
+class Solution {
+public:
+	ListNode* removeNthFromEnd(ListNode* head, int n) {
+		ListNode *slowPtr = head;
+		ListNode *fastPtr = head;
+		while (n >= 1)
+		{
+			fastPtr = fastPtr->next;
+			n--;
+		}
+
+		// 如果此时快指针走到头了，
+		// 说明倒数第 n 个节点就是第一个节点
+		if (fastPtr == nullptr) {
+			return head->next;
+		}
+
+		while (fastPtr->next != nullptr)
+		{
+			slowPtr = slowPtr->next;
+			fastPtr = fastPtr->next;
+		}
+		slowPtr->next = slowPtr->next->next;
+		return head;
+	}
+};
