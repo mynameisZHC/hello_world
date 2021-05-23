@@ -1,0 +1,30 @@
+note:
+1.带备忘录的递归求解
+
+code:
+class Solution {
+public:		   
+	const int mask = 1000000007;
+	int fibRecursion(int n, vector<int> &mem)
+	{
+		if (n == 0) {
+			return 0;
+		}
+		if (n == 1) {
+			return 1;
+		}
+        // 从备忘录中取值
+		if (mem[n] != -1) {
+			return mem[n];
+		}
+
+		mem[n] = (fibRecursion(n - 1, mem) + fibRecursion(n - 2, mem)) % mask;
+		return mem[n];
+	}
+	int fib(int n) {
+		// 备忘录
+		vector<int> mem(n + 1, -1);
+		int result = fibRecursion(n, mem);
+		return result;
+	}
+};
