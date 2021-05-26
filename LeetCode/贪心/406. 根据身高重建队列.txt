@@ -1,0 +1,47 @@
+note:
+1.排序 + 贪心
+贪心算法：按照身高从高到低进行排序，矮的放后面，因为矮的即使放在了高的前面，也不会对之前高的产生影响；但高的放在前面，对矮的结果就会产生影响了。
+2.vector 定制sort
+3.swap直接交换vector中的数据
+
+code:
+class Solution {
+public:
+    static bool compare(const pair<int ,int> &left, const pair<int ,int> &right)
+    {
+        // 身高相等的按前面的人数升序排序
+        if (left.first == right.first) {
+            return left.second < right.second;
+        }
+        // 身高按从高到低 降序排序
+        return left.first > right.first;
+    }
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        vector<pair<int ,int>> peopleInfo;
+        for (auto item : people) {
+            peopleInfo.emplace_back(make_pair(item[0], item[1]));
+        }
+        sort(peopleInfo.begin(), peopleInfo.end(), compare);
+        // index从1开始进行 因为index=0的前面没有大于或等于它的进行向前移动
+        for (int index = 1; index < peopleInfo.size(); ++index) {
+            int fontNumber = peopleInfo[index].second;
+            // index代表排序过后比这个数大于或等于的个数 减去真正队列中它前面的个数fontNumber 即为它需要向前移动的次数
+            int moveTimes = index - fontNumber;
+            int tempIndex = index;
+            while (moveTimes) {
+                // 用swap直接交换vector中的数据
+                swap(peopleInfo[tempIndex], peopleInfo[tempIndex - 1]);
+                tempIndex--;
+                moveTimes--;
+            }
+        }
+        vector<vector<int>> result;
+        for (auto item : peopleInfo) {
+            vector<int> temp;
+            temp.emplace_back(item.first);
+            temp.emplace_back(item.second);
+            result.emplace_back(temp);
+        }
+        return result;
+    }
+};
