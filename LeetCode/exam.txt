@@ -1,0 +1,1445 @@
+20210521专业级第三题思路分享  编辑词条
+摘要：题目大意： 用一个M*N的二维数组sensors代表一片大的自动驾驶测试区域, 每个小区域sensors[i][j]有n个传感器, 现在要在这片区域上找边长为cnt的正方形检测区, 它包含的传感器数要最多, 可能有多个这样的区域, 算出这些区域内不同数量的小区域sensors[i][j]有多少个。 尝试把每一个位置当做检测区的左上角，如果满足大小要求，计算传感器数量(用前缀和)，并在一个栈中维护当前和最大的区域坐标(左上角)。 void PreSumInit(const vector<
+
+题目大意：
+用一个M*N的二维数组sensors代表一片大的自动驾驶测试区域, 每个小区域sensors[i][j]有n个传感器,
+现在要在这片区域上找边长为cnt的正方形检测区, 它包含的传感器数要最多, 可能有多个这样的区域,
+算出这些区域内不同数量的小区域sensors[i][j]有多少个。
+
+
+尝试把每一个位置当做检测区的左上角，如果满足大小要求，计算传感器数量(用前缀和)，并在一个栈中维护当前和最大的区域坐标(左上角)。
+
+
+-cpp代码
+001
+void PreSumInit(const vector<int> &nums, vector<int> &preSum)
+002
+{
+003
+    preSum[0] = 0;
+004
+    int size = nums.size();
+005
+    for (int i = 0; i < size; i++) {
+006
+        preSum[i + 1] = preSum[i] + nums[i];
+007
+    }
+008
+}
+009
+ 
+010
+int PreSumCalcu(const vector<int> &preSum, int i, int j)
+011
+{
+012
+    if (i < 0 || j + 1 >= preSum.size()) {
+013
+        cout << "out of range: i=" << i << " " << j << endl;
+014
+        return 2333;
+015
+    }
+016
+    return preSum[j + 1] - preSum[i];
+017
+}
+018
+ 
+019
+/* 检测区结构体 */
+020
+struct Area {
+021
+    int x;
+022
+    int y;
+023
+    int sum;
+024
+ 
+025
+    Area(int x, int y, int sum) : x(x), y(y), sum(sum)
+026
+    {
+027
+    }
+028
+};
+029
+ 
+030
+class Solution {
+031
+public:
+032
+    bool IsOk(int x, int y)
+033
+    {
+034
+        return (x >= 0 && ((x + this->cnt - 1) < this->M)) && (y >= 0 && ((y + this->cnt - 1) < this->N));
+035
+    }
+036
+ 
+037
+    int CalcuArea(int x, int y)
+038
+    {
+039
+        int sum = 0;
+040
+        for (int i = x; i < x + cnt; i++) {
+041
+            sum += PreSumCalcu(this->preSums[i], y, y + cnt - 1);
+042
+        }
+043
+        return sum;
+044
+    }
+045
+ 
+046
+    void CmpArea(int i, int j, stack<Area> &areas)
+047
+    {
+048
+        int area = CalcuArea(i, j);
+049
+        while (!areas.empty() && area > areas.top().sum) {
+050
+            areas.pop();
+051
+        }
+052
+        if (areas.empty() || area == areas.top().sum) {
+053
+            areas.emplace(i, j, area);
+054
+        }
+055
+    }
+056
+ 
+057
+    void FilterSensors(set<int> &s, int x, int y, const vector<vector<int> > &sensors)
+058
+    {
+059
+        for (int i = x; i < x + cnt; i++) {
+060
+            for (int j = y; j < y + cnt; j++) {
+061
+                s.insert(sensors[i][j]);
+062
+            }
+063
+        }
+064
+    }
+065
+ 
+066
+    int UniqueCount(stack<Area> &areas, const vector<vector<int> > &sensors)
+067
+    {
+068
+        set<int> s;
+069
+        while (!areas.empty()) {
+070
+            Area &area = areas.top();
+071
+            FilterSensors(s, area.x, area.y, sensors);
+072
+            areas.pop();
+073
+        }
+074
+ 
+075
+        return s.size();
+076
+    }
+077
+ 
+078
+    int SensorsNumCategory(const vector<vector<int> > &sensors, int cnt)
+079
+    {
+080
+        this->M = sensors.size();
+081
+        this->N = sensors[0].size();
+082
+        this->cnt = cnt;
+083
+ 
+084
+        int i = 0;
+085
+        for (auto &sensor : sensors) {
+086
+            vector<int> preSum(this->N + 1);
+087
+            PreSumInit(sensor, preSum); /* 构造前缀和 */
+088
+            this->preSums.push_back(preSum);
+089
+        }
+090
+ 
+091
+        stack<Area> areas; /* 个数最多的区域入栈 */
+092
+        for (int i = 0; i < this->M; i++) {
+093
+            for (int j = 0; j < this->N; j++) {
+094
+                /* 选择i, j作为左上角,判断能否构成检测区 */
+095
+                if (IsOk(i, j)) {
+096
+                    CmpArea(i, j, areas);
+097
+                }
+098
+            }
+099
+        }
+100
+ 
+101
+        return UniqueCount(areas, sensors);
+102
+    }
+103
+ 
+104
+private:
+105
+    int M;                        /* 行数 */
+106
+    int N;                        /* 列数 */
+107
+    int cnt;                      /* 检测区域边长 */
+108
+    vector<vector<int> > preSums; /* 构造M个前缀和 */
+109
+};
+
+
+mine:
+struct Area{
+    int row;
+    int col;
+    int areaSum;
+    Area(int row_, int col_, int areaSum_) : row(row_),col(col_),areaSum(areaSum_){}
+};
+
+class Solution {
+public:
+    // 存放
+    stack<Area> resultPoint;
+    void GetResultPoint(const vector<vector<int>> &preSum, int row, int col, int cnt)
+    {
+        if (row + cnt >= preSum.size() || col + cnt >= preSum[0].size()) {
+            return;
+        }
+        pair<int, int> rightDownPoint = {row + cnt, col + cnt};
+
+        pair<int, int> delLeftDownPoint = {row + cnt, col - 1};
+        pair<int, int> delRightUpPoint = {row - 1, col + cnt};
+        pair<int, int> addLeftUpPoint = {row - 1, col - 1};
+        Area inst(row, col, 0);
+        inst.areaSum = preSum[rightDownPoint.first][rightDownPoint.second];
+        if (col - 1 >= 0) {
+            inst.areaSum -= preSum[delLeftDownPoint.first][delLeftDownPoint.second];
+        }
+        if (row - 1 >= 0) {
+            inst.areaSum -= preSum[delRightUpPoint.first][delRightUpPoint.second];
+        }
+        if (col - 1 >= 0 && row - 1 >= 0) {
+            inst.areaSum += preSum[addLeftUpPoint.first][addLeftUpPoint.second];
+        }
+
+        while (!resultPoint.empty() && resultPoint.top().areaSum < inst.areaSum) {
+            resultPoint.pop();
+        }
+        if (!resultPoint.empty() && resultPoint.top().areaSum > inst.areaSum) {
+            return ;
+        }
+        resultPoint.push(inst);
+    }
+
+
+    int GetUniquePointSize(int cnt)
+    {
+        set<pair<int, int>> pointInfo;
+        while (!resultPoint.empty()) {
+            Area result = resultPoint.top();
+            resultPoint.pop();
+            for (int row = result.row; row < result.row + cnt - 1; row++) {
+                for (int col = result.col; col < result.col + cnt - 1; col++) {
+                    pointInfo.insert({row, col});
+                }
+            }
+        }
+        return pointInfo.size();
+    }
+    int SensorsNumCategory(const vector<vector<int> > &sensors, int cnt)
+    {
+        vector<int> temp(sensors[0].size(), 0);
+        vector<vector<int>> preSum(sensors.size(),temp);
+        // 获取二维前缀和数组
+
+        // 横向求前缀和
+        for (int row = 0; row < sensors.size(); row++) {
+            preSum[row][0] = sensors[row][0];
+            for (int col = 0; col < sensors[0].size() - 1; col++) {
+                preSum[row][col + 1] = preSum[row][col] + sensors[row][col + 1];
+            }
+        }
+        // 列方向求前缀和
+        for (int col = 0; col < sensors[0].size(); col++) {
+            for (int row = 0; row < sensors.size() - 1; ++row) {
+                preSum[row + 1][col] = preSum[row ][col] + preSum[row + 1][col];
+            }
+        }
+
+        for (int row = 0; row < sensors.size(); row++) {
+            for (int col = 0; col < sensors[0].size(); col++) {
+                GetResultPoint(preSum, row, col, cnt);
+            }
+        }
+        return GetUniquePointSize(cnt);
+    }
+};
+
+int main(void)
+{
+    vector<vector<int>> vec = {{1, 2, 3, 5}, {2, 8, 13, 5}, {1, 9, 5, 4}, {13, 7, 6, 8}, {1, 9, 5, 8}};
+    Solution sol;
+    cout<<sol.SensorsNumCategory(vec , 2)<<endl;
+    return 0;
+}
+
+
+20210521专业级第二题思路分享  编辑词条
+摘要：题目描述： 略，大概意思是。二叉树，标记满足下面条件的节点：若有一条从根节点到叶子节点的路径下，存在一个节点，将该路径上分为总和相等的两部分，那么该节点应被打上标记。比如下图中的3、5、1。返回所有未被标记的节点的总和9。 【3】7 + 6 = 13 = 11 +2 【5】7 = 7 = 4 + 3 【1】7 + 5 + 4 = 16 = 16 struct TreeNode { int val; struct TreeNode *left; struct TreeNode *right; } int bisectTreePath(TreeNode *root) 解题思路
+
+题目描述：   
+略，大概意思是。二叉树，标记满足下面条件的节点：若有一条从根节点到叶子节点的路径下，存在一个节点，将该路径上分为总和相等的两部分，那么该节点应被打上标记。比如下图中的3、5、1。返回所有未被标记的节点的总和9。
+
+【3】7 + 6 = 13 = 11 +2
+【5】7 = 7 = 4 + 3
+【1】7 + 5 + 4 = 16 = 16
+
+struct TreeNode {
+int val;
+struct TreeNode *left;
+struct TreeNode *right;
+}
+int bisectTreePath(TreeNode *root)
+
+解题思路：
+根据题意需要遍历所有的路径，分别求每条路径的二分和中点，很明显可用DFS算法，但需要注意二分和中点会重复的场景。
+因为需要遍历每一条路径，所以遍历找中点的同时就可以计算结果了。
+
+-cpp代码
+01
+struct TreeNode {
+02
+    int val;
+03
+    TreeNode *left;
+04
+    TreeNode *right;
+05
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr)
+06
+    {
+07
+    }
+08
+};
+09
+ 
+10
+class Solution {
+11
+public:
+12
+    void SearchMid()
+13
+    {
+14
+        int size = this->path.size();
+15
+        if (size <= 2) {
+16
+            return;
+17
+        }
+18
+        int currSum = this->path[0]->val;
+19
+        for (int i = 1; i < size; i++) {
+20
+            /* 找到中点 */
+21
+            if (currSum * 2 == this->pathSum - this->path[i]->val) {
+22
+                if (this->visited.count(this->path[i]) == 0) {
+23
+                    this->visited.insert(this->path[i]); /* 标记中点 */
+24
+                    this->rest -= this->path[i]->val;    /* rest减去中点的值 */
+25
+                }
+26
+                break;
+27
+            }
+28
+            currSum += this->path[i]->val;
+29
+        }
+30
+    }
+31
+ 
+32
+    void Dfs(const TreeNode *root)
+33
+    {
+34
+        this->path.push_back(root);
+35
+        this->pathSum += root->val;
+36
+        this->rest += root->val;
+37
+        /* 已经是叶子节点 */
+38
+        if (root->left == nullptr && root->right == nullptr) {
+39
+            /* 找中点 */
+40
+            SearchMid();
+41
+            return;
+42
+        }
+43
+        if (root->left != nullptr) {
+44
+            Dfs(root->left);
+45
+            this->path.pop_back();
+46
+            this->pathSum -= root->left->val;
+47
+        }
+48
+        if (root->right != nullptr) {
+49
+            Dfs(root->right);
+50
+            this->path.pop_back();
+51
+            this->pathSum -= root->right->val;
+52
+        }
+53
+    }
+54
+ 
+55
+    int BisectTreePath(const TreeNode *root)
+56
+    {
+57
+        if (root == nullptr) {
+58
+            return 0;
+59
+        }
+60
+        Dfs(root);
+61
+        return this->rest;
+62
+    }
+63
+ 
+64
+private:
+65
+    vector<const TreeNode *> path;
+66
+    int pathSum; /* 单条路径的和 */
+67
+    int rest;    /* 所有节点和-中点(要检查重复节点) */
+68
+    unordered_set<const TreeNode *> visited;
+69
+};
+
+
+20210521专业级第一题思路分享  编辑词条
+摘要：设计一个租赁系统，其中查询的时候可以自定义排序规则。
+
+设计一个租赁系统，实现如下功能：
+
+1.添加房子。参数：id为房源id，area为房子面积，price为房子价格，rooms为房间数量，address为地址，用一个二维坐标表示。如果房子已经存在返回false，并更新房子数据，否则添加房子，返回true。
+
+bool AddRoom(int id, int area, int price, int rooms, const vector<int> &address);
+
+
+int AddRoom(int id, int area, int price, int rooms,  int *address, int addressSize);
+
+
+2.删除房子。存在则删除并返回true，否则返回false。
+
+bool DeleteRoom(int id);
+
+
+int DeleteRoom(int id);
+3.查询房子。按条件筛选目标房源，并按排序要求返回房源id列表。
+
+筛选条件：大于等于area，小于等于price，等于rooms。
+
+排序规则：
+
+- orderBy是一个二维数组，每一行代表一个排序规则，每一行有两个数字，分别代表比较对象和升降序。
+其中1代表area，2代表price，3代表dist；1代表升序，2代表降序。
+
+dist代表该房源到目标地点(也就是QueryRoom中参数address)的曼哈顿距离。
+
+曼哈顿距离：在平面上，坐标(x1,y1)的i点与坐标(x2,y2)的j点的曼哈顿距离为： d(i,j)=|X1-X2|+|Y1-Y2|
+
+- 如果orderBy为空按id排序。如果所有排序条件都无法区分大小的再按id排序。
+
+这里原题描述的也有点晦涩，其实就是比较条件可能有多个，一个一个比，相等时再用下一个，最后还相等就用id。
+
+例子: const vector<vector<int> > orderBy = [[1, 1],[2, -1],[3, 1]] 表示先按1-area升序，再按2-price降序，再按3-dist升序。
+
+vector<int> QueryRoom(int area, int price, int rooms, const vector<int> &address,
+const vector<vector<int> > &orderBy)
+
+int * QueryRoom(int area, int price, int rooms, int *address, int addressSize，
+int **orderBy,  int *orderByColSize, int orderBySize, int *retSize)
+本题关键：根据排序要求自定义一个排序逻辑，但跟平常自定义排序算法不同的是，比较函数中需要用到排序指示orderBy，且比较对象(area或price或dist)是不确定的，需要自己稍微设计一下。
+
+-cpp代码
+001
+struct House {
+002
+    House()
+003
+    {
+004
+    }
+005
+ 
+006
+    House(int id, int area, int price, int rooms, const vector<int> &address)
+007
+    {
+008
+        this->id = id;
+009
+        this->area = area;
+010
+        this->price = price;
+011
+        this->rooms = rooms;
+012
+        this->address.insert(this->address.begin(), address.begin(), address.end());
+013
+    }
+014
+ 
+015
+    int id;
+016
+    int area;
+017
+    int price;
+018
+    int rooms;
+019
+    vector<int> address;
+020
+    int dist; /* 曼哈顿距离, 每次查询时更新, 用于排序 */
+021
+};
+022
+ 
+023
+vector<vector<int> > g_orderBy; /* 每一次查询的比较规则 */
+024
+ 
+025
+int CalcuDist(const House &h, const vector<int> &address)
+026
+{
+027
+    return abs(h.address[0] - address[0]) + abs(h.address[1] - address[1]);
+028
+}
+029
+ 
+030
+pair<int, int> CmpObj(const House &h1, const House &h2, int objType)
+031
+{
+032
+    switch (objType) {
+033
+        case 1:
+034
+            return make_pair(h1.area, h2.area);
+035
+        case 2:
+036
+            return make_pair(h1.price, h2.price);
+037
+        case 3:
+038
+            return make_pair(h1.dist, h2.dist);
+039
+        default:
+040
+            break;
+041
+    }
+042
+    return make_pair(-1, -1);
+043
+}
+044
+ 
+045
+bool Cmp(const pair<int, int> &cmpObj, int cmpInd)
+046
+{
+047
+    if (cmpInd < 0) {
+048
+        return cmpObj.first > cmpObj.second;
+049
+    } else {
+050
+        return cmpObj.first < cmpObj.second;
+051
+    }
+052
+}
+053
+ 
+054
+bool MyCmp(const House &h1, const House &h2)
+055
+{
+056
+    if (g_orderBy.empty()) {
+057
+        return h1.id < h2.id;
+058
+    }
+059
+ 
+060
+    for (auto &cmp : g_orderBy) {
+061
+        pair<int, int> cmpObj = CmpObj(h1, h2, cmp[0]);
+062
+        /* 不相等直接比较返回 */
+063
+        if (cmpObj.first != cmpObj.second) {
+064
+            return Cmp(cmpObj, cmp[1]);
+065
+        }
+066
+        /* 相等则按下一个比较规则 */
+067
+    }
+068
+ 
+069
+    /* 还是相等则按房源id比较 */
+070
+    return h1.id < h2.id;
+071
+}
+072
+ 
+073
+class RentingSystem {
+074
+public:
+075
+    RentingSystem()
+076
+    {
+077
+    }
+078
+ 
+079
+    bool AddRoom(int id, int area, int price, int rooms, const vector<int> &address)
+080
+    {
+081
+        if (houses.count(id) == 1) {
+082
+            House &house = houses[id];
+083
+            house.area = area;
+084
+            house.price = price;
+085
+            house.rooms = rooms;
+086
+            house.address[0] = address[0];
+087
+            house.address[1] = address[1];
+088
+            return false;
+089
+        } else {
+090
+            House house(id, area, price, rooms, address);
+091
+            houses[id] = house;
+092
+            return true;
+093
+        }
+094
+    }
+095
+ 
+096
+    bool DeleteRoom(int id)
+097
+    {
+098
+        if (houses.count(id) == 1) {
+099
+            houses.erase(id);
+100
+            return true;
+101
+        }
+102
+ 
+103
+        return false;
+104
+    }
+105
+ 
+106
+    bool FilterHouse(const House &h, int area, int price, int rooms)
+107
+    {
+108
+        if (h.area >= area && h.price <= price && h.rooms == rooms) {
+109
+            return true;
+110
+        }
+111
+ 
+112
+        return false;
+113
+    }
+114
+ 
+115
+    // 筛选：>= area, <= price, == rooms
+116
+    // 排序：1:area 2:price 3:dist 1:升 -1:降
+117
+    vector<int> QueryRoom(int area, int price, int rooms, const vector<int> &address,
+118
+                          const vector<vector<int> > &orderBy)
+119
+    {
+120
+        g_orderBy = orderBy;
+121
+ 
+122
+        vector<House> rt;
+123
+        for (auto &e : this->houses) {
+124
+            if (FilterHouse(e.second, area, price, rooms)) {
+125
+                e.second.dist = CalcuDist(e.second, address);
+126
+                rt.push_back(e.second);
+127
+            }
+128
+        }
+129
+ 
+130
+        sort(rt.begin(), rt.end(), MyCmp);
+131
+ 
+132
+        vector<int> ids;
+133
+        for (auto &h : rt) {
+134
+            ids.push_back(h.id);
+135
+        }
+136
+ 
+137
+        return ids;
+138
+    }
+139
+ 
+140
+private:
+141
+    map<int, House> houses;
+142
+};
+
+寻找左边界或靠近左边界
+寻找右边界或靠近右边界
+差分数组
+前缀和
+堆排序
+滑动窗口
+并查集
+单调栈
+动态规划：凑零钱
+动态规划：最长公共前缀
+字典树
+第k大问题
+第k大距离：二分+双指针
+相互依赖的任务：判断是否有环
+分糖果：技巧类
+常用数学公式
+string常用api
+sstream字符串切割
+string字符串切割
+常用STL容器及其特点
+常用小技巧
+
+寻找左边界或靠近左边界
+
+/*寻找左边界或者最靠近的那个位置
+
+nums：待搜索有序区间(递增)
+n:    区间大小
+k：   寻找目标值
+
+例子：1 4 4 9 序列
+[0:1, 1:4, 2:4, 3:9] 
+(k < 1 ==> 0:1)
+(k == 4 ==> 1:4)
+(k == 2 ==> 0:1) k等于2, 靠近1, 所以返回1
+(k == 10 ==> 3:9)
+*/
+int BsLeftClosestK(const vector<int> nums, int n, int k)
+{
+    int l = 0;
+    int r = n - 1;
+    const int half = 2;
+    while (l < (r - 1)) {
+        int mid = l + ((r - l) / half);
+        if (nums[mid] < k) {
+            l = mid;
+        } else {
+            r = mid;
+        }
+    }
+    if (k < nums[l]) {
+        return l;
+    }
+    if (k > nums[r]) {
+        return r;
+    }
+    return (k - nums[l] < nums[r] - k) ? l : r;
+}
+
+int main()
+{
+    vector<int> nums = { 1, 4, 4, 9 };
+    cout << BsLeftClosestK(nums, nums.size(), 9) << endl;
+    return 0;
+}
+寻找右边界或靠近右边界
+
+static int BsRightClosestK(const vector<int> nums, int n, int k)
+{
+    int l = 0;
+    int r = n - 1;
+    const int half = 2;
+    while (l < (r - 1)) {
+        int mid = l + ((r - l) / half);
+        if (nums[mid] > k) {
+            r = mid;
+        } else {
+            l = mid;
+        }
+    }
+    if (k < nums[l]) {
+        return l;
+    }
+    if (k > nums[r]) {
+        return r;
+    }
+    return (k - nums[l] < nums[r] - k) ? l : r;
+}  // [0:1, 1:4, 2:4, 3:9] (k < 1 ==> 0:1)  (k == 4 ==> 2:4) (k == 2 ==> 0:1) (k == 10 ==> 3:9)
+
+差分数组
+
+void DiffArrInit(const vector<int> &nums, vector<int> &diffArr)
+{
+    int size = nums.size();
+    diffArr[0] = nums[0];
+    for (int i = 1; i < size; i++) {
+        diffArr[i] = nums[i] - nums[i - 1];
+    }
+}
+void DiffArrRec(vector<int> &nums, const vector<int> &diffArr)
+{
+    int size = nums.size();
+    nums[0] = diffArr[0];
+    for (int i = 1; i < size; i++) {
+        nums[i] = diffArr[i] + nums[i - 1];
+    }
+}
+void DiffArrCalcu(vector<int> &diffArr, int i, int j, int k)
+{
+    diffArr[i] += k;
+    if (j + 1 < diffArr.size()) {
+        diffArr[j + 1] -= k;
+    }
+}
+void DiffArrDemo()
+{
+    vector<int> nums = { 1, 2, 3 };
+    vector<int> diffArr(nums.size());
+    DiffArrInit(nums, diffArr);
+    DiffArrCalcu(diffArr, 0, 1, 1);
+    DiffArrCalcu(diffArr, 1, 2, 2);
+    DiffArrRec(nums, diffArr);
+    PrintVector(nums);
+}
+前缀和
+
+void PreSumInit(const vector<int> &nums, vector<int> &preSum)
+{
+    preSum[0] = 0;
+    int size = nums.size();
+    for (int i = 0; i < size; i++) {
+        preSum[i + 1] = preSum[i] + nums[i];
+    }
+}
+int PreSumCalcu(const vector<int> &preSum, int i, int j)
+{
+    if (i < 0 || j + 1 >= preSum.size()) {
+        cout << "out of range: i=" << i << " " << j << endl;
+        return 23333;
+    }
+    return preSum[j + 1] - preSum[i];
+}
+void PreSumDemo()
+{
+    vector<int> nums = { 1, 2, 3 };
+    vector<int> preSum(nums.size() + 1);
+    PreSumInit(nums, preSum);
+    cout << PreSumCalcu(preSum, 1, 2) << endl;
+}  // {1, 2, 3} ==> {0, 1, 3, 6} [1,2] ==> preSum[3] - preSum[1] ==> 5
+堆排序
+
+/* 座位预定系统的例子 */
+class SeatManager {
+public:
+    SeatManager(int n)
+    {
+        int i = 0;
+        while (++i <= n) {
+            this->manager.push_back(i);
+        }
+        make_heap(this->manager.begin(), this->manager.end(), greater<int>());
+    }
+    int reserve()
+    {
+        pop_heap(this->manager.begin(), this->manager.end(), greater<int>());
+        int seatNumber = this->manager.back();
+        this->manager.pop_back();
+        return seatNumber;
+    }
+    void unreserve(int seatNumber)
+    {
+        this->manager.push_back(seatNumber);
+        push_heap(this->manager.begin(), this->manager.end(), greater<int>());
+    }
+private:
+    vector<int> manager;
+};
+
+滑动窗口
+
+/* S中包含T的最小子串 */
+string minLenOfStr(const string &S, const string &T)
+{ /* 统计字符出现次数 */
+    unordered_map<char, int> need;
+    for (auto ch : T) {
+        need[ch]++;
+    }
+    unordered_map<char, int> window;
+    int left = 0;
+    int right = 0;
+    int start = 0;
+    int valid = 0; /* 不重复字符个数 */
+    int len = INT_MAX;
+    while (right < S.size()) {
+        char c = S[right];
+        if (need.count(c) > 0) {
+            window[c]++;
+            if (window[c] == need[c]) {
+                valid++;
+            }
+        } /* 已经满足条件，需要收缩左边窗口，更新结果；left收缩可能需要多次，比如11abc，目标是abc */
+        while (valid == need.size()) {
+            if (right - left < len) {
+                start = left;
+                len = right - left;
+            }
+            c = S[left];             /* 更新结果 */
+            if (need.count(c) > 0) { /* 已经有1个字符不满足 */
+                if (window[c] == need[c]) {
+                    --valid;
+                } /* 对应字符的出现次数减1 */
+                --window[c];
+            } /* 左侧继续收缩 */
+            left++;
+        } /* 右侧窗口继续扩张 */
+        right++;
+    }
+    return len == INT_MAX ? "" : S.substr(start, len + 1);
+}
+
+并查集
+
+class UF {
+public:
+    UF(int n)
+    {
+        this->count = n;
+        for (int i = 0; i < n; i++) {
+            parent.push_back(i);
+            size.push_back(1);
+        }
+    }
+    void Union(int p, int q)
+    {
+        int rootP = Find(p);
+        int rootQ = Find(q);
+        if (rootP == rootQ)
+            return;
+        if (size[rootP] > size[rootQ]) {
+            parent[rootQ] = rootP;
+            size[rootP] += size[rootQ];
+        } else {
+            parent[rootP] = rootQ;
+            size[rootQ] += size[rootP];
+        }
+        count--;
+    }
+    bool IsConnected(int p, int q)
+    {
+        int rootP = Find(p);
+        int rootQ = Find(q);
+        return rootP == rootQ;
+    }
+    int Find(int x)
+    {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]]; /* 进行路径压缩 */
+            x = parent[x];
+        }
+        return x;
+    }
+    int Count()
+    {
+        return count;
+    }
+private:
+    int count;          /* 连通分量 */
+    vector<int> parent; /* 该节点的父节点 */
+    vector<int> size;   /* 树重, 初始化为1 */
+};
+单调栈
+
+int largestRectangleArea(vector<int> &heights)
+{
+    int n = heights.size();
+    vector<int> rightLess(n, 0);
+    stack<int> s;
+    for (int i = 0; i < n; i++) {
+        while (!s.empty() && heights[i] < heights[s.top()]) {
+            rightLess[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }
+    while (!s.empty()) {
+        rightLess[s.top()] = n;
+        s.pop();
+    }
+    vector<int> leftLess(n, 0);
+    for (int i = n - 1; i >= 0; i--) {
+        while (!s.empty() && heights[i] < heights[s.top()]) {
+            leftLess[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }
+    while (!s.empty()) {
+        leftLess[s.top()] = -1;
+        s.pop();
+    }
+    int maxArea = 0;
+    for (int i = 0; i < n; i++) {
+        maxArea = max(maxArea, (rightLess[i] - 1 - leftLess[i]) * heights[i]);
+    }
+    return maxArea;
+}
+动态规划：凑零钱
+
+vector<int> dp(amount + 1, INT_MAX - 1);
+dp[0] = 0;
+for (int i = 1; i < amount + 1; i++) {
+    for (int c : coins) {
+        if (i - c < 0) {
+            continue;
+        }
+        dp[i] = min(dp[i - c] + 1, dp[i]);
+    }
+}
+return dp[amount] == INT_MAX - 1 ? -1 : dp[amount];
+动态规划：最长公共前缀
+
+int longestCommonSubsequence1(const vector<int> &s1, const vector<int> &s2)
+{
+    int n = s1.size(), m = s2.size();
+    vector<vector<int> > f(n + 1, vector<int>(m + 1));
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            f[i][j] = max(f[i - 1][j], f[i][j - 1]); /* 比较分别连线a或b的情况下的最大值 */
+            if (s1[i - 1] == s2[j - 1]) {
+                f[i][j] = max(f[i][j], f[i - 1][j - 1] + 1); /* 如果a和b可以一样大,那么可以连线ab */
+            }
+        }
+    }
+    return f[n][m];
+}
+int longestCommonSubsequence2(string s1, string s2)
+{
+    int n = s1.size(), m = s2.size();
+    s1 = " " + s1, s2 = " " + s2; /* 追加1个空格方便计算 */
+    int f[n + 1][m + 1];
+    memset(f, 0, sizeof(f));
+    for (int i = 0; i <= n; i++)
+        f[i][0] = 1;
+    for (int j = 0; j <= m; j++)
+        f[0][j] = 1;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            f[i][j] = max(f[i - 1][j], f[i][j - 1]);
+            if (s1[i] == s2[j]) {
+                f[i][j] = max(f[i - 1][j - 1] + 1, f[i][j]);
+            }
+        }
+    }
+    return f[n][m] - 1;
+}
+字典树
+
+第k大问题
+
+void MinHeap()
+{
+    int nums[] = { 4, 3, 2, 1, 0, -3 };
+    int k = 3;
+    priority_queue<int, vector<int>, greater<int> > pq; /* 小顶堆 */
+    for (int i : nums) {
+        pq.push(i); /* 每次把当前最小的pop出去 */
+        if (pq.size() > k) {
+            cout << "pop: " << pq.top() << endl; /* 1 0 -3 */
+            pq.pop();
+        }
+    }
+    cout << pq.top() << endl; /* 2 */
+}
+void MaxHeap()
+{
+    int nums[] = { 4, 3, 2, 1, 0, -3 };
+    int k = 3;
+    priority_queue<int> pq; /* (默认)大顶堆 */
+    for (int i : nums) {
+        pq.push(i);
+    }
+    while (--k > 0) /* 2 1 0 只会pop k - 1 次 */ {
+        cout << "pop: " << pq.top() << endl;
+        pq.pop();
+    }
+    cout << pq.top() << endl;
+} /* 对数组元素进行随机打乱 */
+void shuffle(int nums[], int len)
+{
+    for (int i = 0; i < len; i++) { /* 从 i 到最后随机选一个元素 */
+        int r = i + rand() % (len - i);
+        swap(nums[i], nums[r]);
+    }
+}
+int partition(int nums[], int lo, int hi)
+{
+    if (lo == hi) {
+        return lo;
+    }
+    int pivot = nums[lo];
+    int i = lo;     /* 第一次使用++i 因为lo已经被选了 */
+    int j = hi + 1; /* 第一次使用--j */
+    while (true) {  /* 指针一直往右移，直到遇到一个比目标大的 */
+        while (i < hi && nums[++i] < pivot)
+            ; /* 指针一直往左移，直到遇到一个比目标小的 */
+        while (j > lo && nums[--j] > pivot)
+            ; /* 先判断是否已经找完 */
+        if (i >= j) {
+            break;
+        } /* 大的去右边，小的来左边 */
+        swap(nums[i], nums[j]);
+    } /* 交换最终确定的位置（容易漏掉） */
+    swap(nums[lo], nums[j]);
+    return j;
+}
+int FindKthLargest(int nums[], int k, int len)
+{
+    shuffle(nums, len);
+    int lo = 0;
+    int hi = len - 1;
+    while (lo <= hi) { /* 本次找到的确定的位置（排序后的位置） */
+        int p = partition(nums, lo, hi);
+        if (k == p) {
+            return nums[k];
+        }
+        if (k < p) {
+            hi = p - 1;
+        } else {
+            lo = p + 1;
+        }
+    }
+    return -1;
+}
+void QuickSort()
+{
+    int nums[] = { 1, 2, 3, 4, 0, -2 };
+    int len = sizeof(nums) / sizeof(int);
+    shuffle(nums, len);
+    int k = 3;
+    cout << FindKthLargest(nums, len - 3, len) << endl; /* 第k大也就是第len-k小 */
+}
+第k大距离：二分+双指针
+
+class Solution {
+public:
+    int smallestDistancePair(int[] nums, int k)
+    {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int left = 0, right = nums[n - 1] - nums[0];
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (getCount(mid, nums) < k) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return left;
+    }
+private:
+    int getCount(int dis, int[] nums)
+    {
+        int l = 0, cnt = 0;
+        for (int r = 0; r < nums.length; r++) {
+            while (nums[r] - nums[l] > dis) {
+                l++;
+            }
+            cnt += r - l;
+        }
+        return cnt;
+    }
+}
+相互依赖的任务：判断是否有环
+
+class Graph {
+public:
+    Graph(int V);
+    ~Graph();
+    void addEdge(int v, int w); /* 添加边 */
+    bool topological_sort();    /* 拓扑排序 */
+private:
+    int V;                    /* 顶点个数 */
+    vector<vector<int> > adj; /* 邻接表 */
+    queue<int> q;             /* 维护一个入度为0的顶点的集合 */
+    vector<int> indegree;     /* 记录每个顶点的入度 */
+};
+Graph::Graph(int V)
+{
+    this->V = V;
+    adj.resize(V);
+    indegree.resize(V); /* 入度全部初始化为0 */
+}
+Graph::~Graph()
+{
+}
+void Graph::addEdge(int v, int w)
+{
+    adj[v].push_back(w);
+    ++indegree[w];
+}
+bool Graph::topological_sort()
+{
+    for (int i = 0; i < V; ++i) {
+        if (indegree[i] == 0) {
+            q.push(i); /* 将所有入度为0的顶点入队 */
+        }
+    }
+    int count = 0; /* 计数，记录当前已经输出的顶点数 */
+    while (!q.empty()) {
+        int v = q.front(); /* 从队列中取出一个顶点 */
+        q.pop();
+        cout << v << ; /* 输出该顶点 */
+        ++count;       /* 将所有v指向的顶点的入度减1，并将入度减为0的顶点入栈 */
+        auto beg = adj[v].begin();
+        for (; beg != adj[v].end(); ++beg) {
+            if (--indegree[*beg] == 0) {
+                q.push(*beg); /* 若入度为0，则入栈 */
+            }
+        }
+    }
+    if (count < V) {
+        return false; /* 没有输出全部顶点，有向图中有回路 */
+    } else {
+        return true; /* 拓扑排序成功 */
+    }
+}
+分糖果：技巧类
+
+常用数学公式
+
+void math_api()
+{
+    cout << "4的平方：" << sqrt(4) << endl;                /* 2 */
+    cout << "-1.1的绝对值：" << abs(-1.1) << endl;          /* 1.1 fabs, labs */
+    cout << "3.6向下取整：" << floor(3.6) << endl;          /* 3 floor是地板的意思，代表向下 */
+    cout << "3.01向上取整：" << ceil(3.01) << endl;         /* 4 */
+    cout << "3.01和1.1的余数：" << fmod(3.01, 1.1) << endl; /* 0.81 浮点数求余 */
+    cout << "e的1.21次方：" << exp(1.21) << endl;          /* e = 2.71828 */
+    cout << "以e为底求对数：" << log(2.71828) << endl;        /* 以e为底 */
+    cout << "以10为底求对数：" << log10(100) << endl;
+    cout << "1.1的2次方：" << pow(1.1, 2) << endl;
+    double n;
+    cout << "1.21的小数部分：" << modf(1.21, &n) << endl; /* 0.21 返回小数部分 */
+    cout << "1.21的整数部分：" << n << endl;              /* 1 */
+}
+string常用api
+
+void str_api()
+{
+    string s = "123";
+    s[0] = 'a'; /* a23 */
+    cout << "s=" << s << endl;
+    cout << "size=" << s.size() << "capacity=" << s.capacity() << endl;
+    s.replace(0, 3, "abcdefg"); /* a23->abcdefg 从0开始替换3个 */
+    cout << "s=" << s << endl;
+    cout << "size=" << s.size() << "capacity=" << s.capacity() << endl;
+    s.erase(0, 2); /* cdefg 从位置0开始，删除2个 */
+    cout << "s=" << s << endl;
+    cout << isdigit(s[0]) << endl; /* 是数字 */
+    cout << isalpha(s[0]) << endl; /* 是字母 */
+    cout << isalnum(s[0]) << endl; /* 是字母或者数字 */
+    cout << isupper(s[0]) << endl; /* 是大写字母 */
+    cout << islower(s[0]) << endl; /* 是小写字母 */
+    cout << s[0] << endl;
+    cout << s.find_last_of("g") << endl; /* 4 size_t 返回类型 */
+    s = "abcabcabc";
+    int i = s.find("abd"); /* find是全匹配 */
+    cout << "i=" << i << endl;
+    int j = s.find_first_of("fbd"); /* find_first_of 不是全匹配 */
+    cout << i << endl;
+    cout << j << s[j] << endl;
+    while (j != -1) {
+        j = s.find_first_of("fbd", j + 1);
+        cout << j << " " << s[j] << endl;
+    }
+    cout << s.rfind("abc") << endl;             /* 反向查找 */
+    cout << s.find_first_not_of("hak") << endl; /* 第二个字符b没有在hak中，所以输出1 */
+    string str_cat = "";
+    str_cat = str_cat + 'a'; /* ok */ /* cout << "" + 'a' << endl; 编译不通过 */
+    str_cat.append("999");
+    str_cat.append(1, 'z'); /* 添加一个字符 */
+    str_cat.append(2, 'f'); /* 添加一个字符 */
+    cout << str_cat << endl;
+    for (int i = 0; i < s.size(); i++) {
+        str_cat += s[i];
+    }
+    cout << str_cat << endl;
+    string str = ""; /* str += ''; wrong不能加空字符串 */
+    str += 'a';
+}
+sstream字符串切割
+
+#include <sstream>
+vector<string> SsSplit(const string &str, const char pattern)
+{
+    vector<string> res;
+    stringstream input(str);
+    string temp;
+    while (getline(input, temp, pattern)) {
+        res.push_back(temp);
+    }
+    return res;
+}  // (=123==456=78=,["",123,"",456,78]) (=123==456=78==,["",123,"",456,78,""])
+string字符串切割
+
+vector<string> StrSplit(const string &str, const string &pattern)
+{
+    vector<string> res;
+    if (str.empty()) {
+        return res;
+    }
+    string strs = str + pattern;
+    size_t pos = strs.find(pattern);
+    int start = 0;
+    while (pos != strs.npos) {
+        string temp = strs.substr(start, pos - start);
+        res.push_back(temp);
+        start = pos + 1;
+        pos = strs.find(pattern, start);
+    }
+    return res;
+}  // (=123==456=78=,["",123,"",456,78,""])
