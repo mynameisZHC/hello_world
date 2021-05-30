@@ -1,0 +1,96 @@
+note:
+1.最早开始想用双指针滑窗来做 但没有考虑到有负数的情况
+
+code:
+class Solution {
+public:
+    int GetSum(int leftIndex, int rightIndex, const vector<int> &nums)
+    {
+        int sum = 0;
+        for (;leftIndex <= rightIndex; leftIndex++) {
+            sum += nums[leftIndex];
+        }
+        return sum;
+    }
+    int subarraySum(vector<int>& nums, int k) {
+        int leftIndex = 0;
+        int rightIndex = 0;
+        //int tempSum = 0;
+        int reuslt = 0;
+        while (rightIndex < nums.size() && leftIndex < nums.size()) {
+            int tempSum = GetSum(leftIndex, rightIndex, nums);
+            if (tempSum < k) {
+                rightIndex++;
+            } else if (tempSum == k) {
+                reuslt++;
+                leftIndex++;
+                rightIndex++;
+            } else if (tempSum > k) {
+                leftIndex++;
+            }
+        }
+        return reuslt;
+    }
+};
+
+note:
+1.普通前缀和数组 (性能用例过不了)
+
+code:
+class Solution {
+public:
+	int subarraySum(vector<int>& nums, int k) {
+		int reuslt = 0;
+		vector<int> preSum(nums.size(),0);
+		// 构造前缀和数组
+		preSum[0] = nums[0];
+		for (int index = 0; index < nums.size() - 1; index++) {
+			preSum[index + 1] = preSum[index] + nums[index + 1];
+		}
+
+		for (int i = 0; i < nums.size(); i++) {
+			// preSum[i] == k 代表 nums[0]...nums[i]的累加和==k
+			if (preSum[i] == k) {
+				reuslt++;
+			}
+			for (int j = 0; j < i; j++) {
+				// preSum[i] - preSum[j] == k 代表 nums[j+1]...nums[i]的累加和==k
+				if (preSum[i] - preSum[j] == k) {
+					reuslt++;
+				}
+			}
+		}
+		return reuslt;
+	}
+};
+
+note:
+1.前缀和 + 哈希表
+
+code:
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        int result = 0;
+        // 前缀和 -> 前缀和出现次数
+        map<int, int> preArrMap;
+        int sum_i = 0;
+        int sum_diff = 0;
+        // 这个非常重要 前缀和为0的对应sum_i == k 所以result应该+1
+        // 后续如果有真的前缀和为0的就在基础上++就行
+        preArrMap[0] = 1;
+        for (int index = 0; index < nums.size(); index++) {
+            // sum_i的值代表前缀和
+            sum_i += nums[index];
+
+            sum_diff = sum_i - k;
+            if (preArrMap.find(sum_diff) != preArrMap.end()) {
+                result += preArrMap[sum_diff];
+            }
+
+            // sum_i对应的前缀和出现次数++
+            preArrMap[sum_i]++;
+        }
+        return result;
+    }
+};

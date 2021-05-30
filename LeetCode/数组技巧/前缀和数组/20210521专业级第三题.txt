@@ -1,0 +1,101 @@
+题目大意：
+用一个M*N的二维数组sensors代表一片大的自动驾驶测试区域, 每个小区域sensors[i][j]有n个传感器,
+现在要在这片区域上找边长为cnt的正方形检测区, 它包含的传感器数要最多, 可能有多个这样的区域,
+算出这些区域内不同数量的小区域sensors[i][j]有多少个。
+
+
+尝试把每一个位置当做检测区的左上角，如果满足大小要求，计算传感器数量(用前缀和)，并在一个栈中维护当前和最大的区域坐标(左上角)。
+
+
+
+note:
+1.二维前缀和:先行方向求前缀和 然后在此基础上 列方向求前缀和 得到一个二维前缀和数组
+2.计算一个矩形内的传感器和就可以用二维前缀和矩阵来求 具体求法见代码
+
+struct Area{
+	int row;
+	int col;
+	int areaSum;
+	Area(int row_, int col_, int areaSum_) : row(row_), col(col_), areaSum(areaSum_){}
+};
+
+class Solution {
+public:
+	// 存放
+	stack<Area> resultPoint;
+	void GetResultPoint(const vector<vector<int>> &preSum, int row, int col, int cnt)
+	{
+		// {row, col}为左上角顶点 边长为cnt的矩形面积 利用二维前缀和数组preSum就等于右上角代表的前缀和 - 左上角左边一个代表的前缀和 - 右下角下边一个代表的前缀和 + 左下角的左下一个代表的前缀和
+		// 计算每个点之前都要先判断是否在范围内
+		if (row + cnt >= preSum.size() || col + cnt >= preSum[0].size()) {
+			return;
+		}
+		pair<int, int> rightDownPoint = { row + cnt, col + cnt };
+		pair<int, int> delLeftDownPoint = { row + cnt, col - 1 };
+		pair<int, int> delRightUpPoint = { row - 1, col + cnt };
+		pair<int, int> addLeftUpPoint = { row - 1, col - 1 };
+		Area inst(row, col, 0);
+		inst.areaSum = preSum[rightDownPoint.first][rightDownPoint.second];
+		if (col - 1 >= 0) {
+			inst.areaSum -= preSum[delLeftDownPoint.first][delLeftDownPoint.second];
+		}
+		if (row - 1 >= 0) {
+			inst.areaSum -= preSum[delRightUpPoint.first][delRightUpPoint.second];
+		}
+		if (col - 1 >= 0 && row - 1 >= 0) {
+			inst.areaSum += preSum[addLeftUpPoint.first][addLeftUpPoint.second];
+		}
+
+		// 类似单调栈 栈里面存放的是areaSum最大的数据 可以有多个同时为最大areaSum的数据
+		while (!resultPoint.empty() && resultPoint.top().areaSum < inst.areaSum) {
+			resultPoint.pop();
+		}
+		if (!resultPoint.empty() && resultPoint.top().areaSum > inst.areaSum) {
+			return;
+		}
+		resultPoint.push(inst);
+	}
+
+
+	int GetUniquePointSize(int cnt)
+	{
+		set<pair<int, int>> pointInfo;
+		while (!resultPoint.empty()) {
+			Area result = resultPoint.top();
+			resultPoint.pop();
+			for (int row = result.row; row <= result.row + cnt - 1; row++) {
+				for (int col = result.col; col <= result.col + cnt - 1; col++) {
+					pointInfo.insert({ row, col });
+				}
+			}
+		}
+		return pointInfo.size();
+	}
+	int SensorsNumCategory(const vector<vector<int> > &sensors, int cnt)
+	{
+		vector<int> temp(sensors[0].size(), 0);
+		vector<vector<int>> preSum(sensors.size(), temp);
+		// 获取二维前缀和数组
+
+		// 行方向求前缀和
+		for (int row = 0; row < sensors.size(); row++) {
+			preSum[row][0] = sensors[row][0];
+			for (int col = 0; col < sensors[0].size() - 1; col++) {
+				preSum[row][col + 1] = preSum[row][col] + sensors[row][col + 1];
+			}
+		}
+		// 列方向求前缀和
+		for (int col = 0; col < sensors[0].size(); col++) {
+			for (int row = 0; row < sensors.size() - 1; ++row) {
+				preSum[row + 1][col] = preSum[row][col] + preSum[row + 1][col];
+			}
+		}
+
+		for (int row = 0; row < sensors.size(); row++) {
+			for (int col = 0; col < sensors[0].size(); col++) {
+				GetResultPoint(preSum, row, col, cnt - 1);
+			}
+		}
+		return GetUniquePointSize(cnt);
+	}
+};

@@ -1,0 +1,40 @@
+note:
+1.差分数组
+
+code:
+class Solution {
+public:
+    // 给区间[left, right] 增加value(可以是负数)
+    void AddValue(int leftIndex, int rightIndex, int value, vector<int> &diffArr)
+    {
+        diffArr[leftIndex] += value;
+        if (rightIndex + 1 < diffArr.size()) {
+            diffArr[rightIndex + 1] -= value;
+        }
+        return;
+    }
+    // 根据差分数组反推结果数组
+    vector<int> GetResult(vector<int> &diffArr)
+    {
+        vector<int> result(diffArr.size());
+        result[0] = diffArr[0];
+        for (int index = 1; index < diffArr.size(); index++) {
+            result[index] = diffArr[index] + result[index - 1];
+        }
+        return result;
+    }
+    
+    vector<int> corpFlightBookings(vector<vector<int>>& bookings, int n) {
+        vector<int> inputVec (n, 0);
+        vector<int> diffArr(n);
+        diffArr[0] = inputVec[0];
+        // 构造差分数组 虽然这里因为输入数组是全0 差分数组也是全0  但这个形式要知道
+        for (int index = 1; index < n;index++) {
+            diffArr[index] = inputVec[index] - inputVec[index - 1];
+        }
+        for (auto item : bookings) {
+            AddValue(item[0] - 1, item[1] - 1, item[2], diffArr);
+        }
+        return GetResult(diffArr);
+    }
+};
