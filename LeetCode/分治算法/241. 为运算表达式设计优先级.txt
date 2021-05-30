@@ -1,0 +1,145 @@
+note:
+1.带备忘录的分治算法
+
+code:
+class Solution {
+public:
+	// 备忘录
+	map<pair<int, int>, vector<int>> g_memInfo;
+	int CalculateValue(int leftNum, int rightNum, char inputOperator)
+	{
+		switch (inputOperator)
+		{
+		case '+':
+			return leftNum + rightNum;
+		case '-':
+			return leftNum - rightNum;
+		case '*':
+			return leftNum * rightNum;
+		default:
+			break;
+		}
+		return 0;
+	}
+	vector<int> recursion(int leftIndex, int righIndex, const vector<int> &number, const vector<char> &operators)
+	{
+		vector<int> result;
+		// 递归结束条件 leftIndex == righIndex 此时获取对应的数字作为返回
+		if (leftIndex == righIndex) {
+			result.emplace_back(number[leftIndex]);
+			return result;
+		}
+		// 如果备忘录里面有 则直接返回备忘录里面对应的结果
+		if (g_memInfo.find({ leftIndex, righIndex }) != g_memInfo.end()) {
+			return g_memInfo[{ leftIndex, righIndex }];
+		}
+
+		for (int index = leftIndex; index < righIndex; index++) {
+			/******分******/
+			vector<int> leftValVec = recursion(leftIndex, index, number, operators);
+			vector<int> rightValVec = recursion(index + 1, righIndex, number, operators);
+			/******治******/
+			for (auto leftVal : leftValVec) {
+				for (auto rightVal : rightValVec) {
+					int tempSum = CalculateValue(leftVal, rightVal, operators[index]);
+					result.emplace_back(tempSum);
+				}
+			}
+		}
+		// 更新备忘录
+		g_memInfo.insert({ { leftIndex, righIndex }, result });
+		return result;
+	}
+	vector<int> diffWaysToCompute(string expression) {
+		vector<int> result;
+		vector<int> numbers;
+		vector<char> operators;
+		int preIndex = 0;
+		for (int index = 0; index < expression.size(); index++) {
+			// isdigit的使用
+			if (!isdigit(expression[index]) && index != 0) {
+				operators.emplace_back(expression[index]);
+				numbers.emplace_back(stoi(expression.substr(preIndex, index - preIndex)));
+				preIndex = index + 1;
+			}
+
+		}
+		// 最后一个数字是在最后一个运算符之后 需要单独处理
+		numbers.emplace_back(stoi(expression.substr(preIndex)));
+
+		// 特殊输入处理
+		if (numbers.size() == 1) {
+			return numbers;
+		}
+		// 使用递归求结果
+		result = recursion(0, operators.size(), numbers, operators);
+
+		return result;
+	}
+};
+
+note:
+1.带备忘录的分治算法 这个版本是以运算符作为分割点 对左右两个子串分别处理 看起来要清晰一点
+
+code:
+class Solution {
+public:
+	// 备忘录
+	map<string, vector<int>> g_memInfo;
+	void GetValue(const vector<int> &leftValVec, const vector<int> &rightValVec, char operatorCh, vector<int> &result)
+	{
+
+		for (auto leftVal : leftValVec) {
+			for (auto rightVal : rightValVec) {
+				switch (operatorCh)
+				{
+				case '+':
+					result.emplace_back(leftVal + rightVal);
+					break;
+				case '-':
+					result.emplace_back(leftVal - rightVal);
+					break;
+				case '*':
+					result.emplace_back(leftVal * rightVal);
+					break;
+				}
+			}
+		}
+		return;
+	}
+
+	vector<int> Recursion(string str)
+	{
+		// 如果备忘录里面之前计算过str的结果 则直接用备忘录里面存储的结果
+		if (g_memInfo.find(str) != g_memInfo.end()) {
+			return g_memInfo[str];
+		}
+		vector<int> result;
+		for (int index = 0; index < str.size(); index++) {
+			if (!isdigit(str[index])) {
+				char operatorCh = str[index];
+				/****** 分 ******/
+				// 以运算符为中心，分割成两个字符串，分别递归计算
+				vector<int> leftValVec = Recursion(str.substr(0, index));
+				vector<int> rightValVec = Recursion(str.substr(index + 1));
+
+				/****** 治 ******/
+				// 通过子问题的结果，合成原问题的结果
+				GetValue(leftValVec, rightValVec, operatorCh, result);
+			}
+		}
+		// result为empty说明str里面没有运算符 即str为一个数字
+		if (result.empty()) {
+			result.emplace_back(stoi(str));
+		}
+
+		// 更新备忘录
+		g_memInfo[str] = result;
+		return result;
+	}
+
+	vector<int> diffWaysToCompute(string expression) {
+		vector<int> result = Recursion(expression);
+		return result;
+	}
+};
