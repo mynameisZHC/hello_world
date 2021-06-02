@@ -1,0 +1,39 @@
+note:
+1.滑窗 双指针
+
+code:
+class Solution {
+public:
+    int longestOnes(vector<int>& nums, int k) {
+        string memory;
+        for (auto item : nums) {
+            memory +=to_string(item);
+        }
+        int left = 0;
+        int right = 0;
+        int arr[2] ={0};
+        int result = 0;
+        while (left < memory.size()) {
+            // 一直移动右指针 直到滑窗里面'0'大于k 或者到达数组边界
+            while (arr[0] <= k && right < memory.size()) {
+                arr[memory[right] - '0']++;
+                right++;
+            }
+            // 到此处可能是两组情况
+            // 第一种是arr[0] > k 此时符合条件的滑窗长度为right -left -1
+            // 第二种是arr[0] <= k  right == memory.size() 此时符合条件的滑窗长度为right -left;
+            if (arr[0] > k) {
+                result = max(result, right -left -1);
+            } else {
+                result = max(result, right -left);
+                // 此时因为right已经到达边界 那么此时这个result就应该是最大的result了 不需要后面再滑动左指针
+                break;
+            }
+
+            arr[memory[left] - '0']--;
+            left++;
+
+        }
+        return result;
+    }
+};
