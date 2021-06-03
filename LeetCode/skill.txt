@@ -1,5 +1,6 @@
-url:https://blog.csdn.net/MOU_IT/article/details/89060249
+进制转换
 
+url:https://blog.csdn.net/MOU_IT/article/details/89060249
 1、十进制和二进制相互转换
 （1）十进制转二进制
 int a = 10;
@@ -101,3 +102,13 @@ string binary = "D5";
 bitset<8> bit(stoi(binary, nullptr, 16));
 cout << bit << endl;
  
+ 
+容器尾部插入
+string str1 = "123";
+string str2 = "456";
+str1.append(str2);
+//str1.insert(str1.size(), str2);
+
+vector<int> vec1 = {1,2,3};
+vector<int> vec2 = {4,5,6};
+vec1.insert(vec1.end(), vec2.begin(), vec2.end());
