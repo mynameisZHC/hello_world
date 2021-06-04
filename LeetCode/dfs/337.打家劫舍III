@@ -1,0 +1,29 @@
+note:
+dfs、自底向上 dp
+
+code:
+class Solution {
+public:
+    // 定义一个vector<int> 的2维数组 [0]存放当前节点不偷时能获取的最大钱数 [1]存放当前节点偷时能获取的最大钱数
+    vector<int> dfsrob(TreeNode* root)
+    {
+        vector<int> result(2,0);
+        if (root == nullptr) {
+            // rooy == nullptr时 偷和不偷的钱数都是0
+            return result;
+        }
+
+        vector<int> left = dfsrob(root->left);
+        vector<int> right = dfsrob(root->right);
+        // 当前节点不偷时能获取的最大钱数 = 左孩子能偷到的最大钱数(max(左孩子不偷时得到的最大钱数, 左孩子偷时得到的最大钱数)) + 右孩子能偷到的最大钱数(max(右孩子不偷时得到的最大钱数, 右孩子偷时得到的最大钱数))
+        result[0] = max(left[0], left[1]) +  max(right[0], right[1]);
+        // 当前节点偷时能获取的最大钱数 = 左孩子不偷时能得到的最大钱数 + 右孩子不偷时能得到的最大钱数 + 当前节点的钱数
+        result[1] = left[0] + right[0] + root->val;
+        return result;
+    }
+    int rob(TreeNode* root)
+    {
+        vector<int> result = dfsrob(root);
+        return (max(result[0], result[1]));
+    }
+};
