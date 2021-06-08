@@ -1,0 +1,29 @@
+code:
+1.根据不同状态的dfs
+
+code：
+class Solution {
+public:
+    // 返回值first代表此节点不偷时能获取的最大金额; 返回值second代表此节点偷时能获取的最大金额
+    pair<int, int> dfs(TreeNode *node)
+    {
+        if (node == nullptr) {
+            // 此时不偷或偷都返回0
+            return {0, 0};
+        }
+        
+        pair<int, int> leftPair = dfs(node->left);
+        pair<int, int> rightPair = dfs(node->right);
+        
+        // 当前节点不偷时能获取的最大金额:左节点(偷or不偷)能获取的最大金额 + 右节点(偷or不偷)能获取的最大金额
+        int curNodeNotSteal = max(leftPair.first, leftPair.second) + max(rightPair.first, rightPair.second);
+        // 当前节点偷时能获取的最大金额:左节点不偷能获取的最大金额 + 右节点不偷能获取的最大金额 + 本节点偷获取的金额
+        int curNodeSteal = leftPair.first + rightPair.first + node->val;
+        return {curNodeNotSteal, curNodeSteal};
+    }
+
+    int rob(TreeNode* root) {
+        pair<int, int> result = dfs(root);
+        return max(result.first, result.second);
+    }
+};
