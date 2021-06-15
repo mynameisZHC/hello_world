@@ -2,3 +2,12 @@
 P9 bind()函数详解
 https://blog.csdn.net/yusiguyuan/article/details/12612395
 https://blog.csdn.net/brk1985/article/details/50894520
+
+2.僵尸进程/孤儿进程
+https://www.cnblogs.com/anker/p/3271773.html
+https://www.zhihu.com/question/29378056/answer/70645585
+https://blog.csdn.net/u013246898/article/details/52985739
+https://www.cnblogs.com/wuchanming/p/4020463.html
+
+我们可以用top命令来查看服务器当前是否有僵尸进程,可以看到第二行行尾有个 0 zombie，如果数字大于0，那么意味着服务器当前存在有僵尸进程,可以用ps和grep命令寻找僵尸进程
+ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]'
