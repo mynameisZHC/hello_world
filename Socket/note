@@ -11,3 +11,6 @@ https://www.cnblogs.com/wuchanming/p/4020463.html
 
 我们可以用top命令来查看服务器当前是否有僵尸进程,可以看到第二行行尾有个 0 zombie，如果数字大于0，那么意味着服务器当前存在有僵尸进程,可以用ps和grep命令寻找僵尸进程
 ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]'
+
+3.Linux-ps命令学习
+0https://www.jianshu.com/p/943b90150c10
