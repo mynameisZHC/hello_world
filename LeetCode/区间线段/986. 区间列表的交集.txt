@@ -1,0 +1,30 @@
+note:
+1.排序、画图分场景分析
+
+code:
+class Solution {
+public:
+    vector<vector<int>> intervalIntersection(vector<vector<int>>& firstList, vector<vector<int>>& secondList) {
+        int firstIndex = 0;
+        int secondIndex = 0;
+        vector<vector<int>> result;
+        while (firstIndex < firstList.size() && secondIndex < secondList.size()) {
+            // 没有交集的情况非反就是有交集的情况
+            if (!(firstList[firstIndex][1] < secondList[secondIndex][0] || secondList[secondIndex][1] < firstList[firstIndex][0])) {
+                int left = max(firstList[firstIndex][0], secondList[secondIndex][0]);
+                int right = min(firstList[firstIndex][1], secondList[secondIndex][1]);
+                vector<int> temp;
+                temp.emplace_back(left);
+                temp.emplace_back(right);
+                result.emplace_back(temp);
+            }
+
+            if (firstList[firstIndex][1] < secondList[secondIndex][1]) {
+                firstIndex++;
+            } else {
+                secondIndex++;
+            }
+        }
+        return result;
+    }
+};
