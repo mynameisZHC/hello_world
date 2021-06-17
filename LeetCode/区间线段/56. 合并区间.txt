@@ -1,0 +1,53 @@
+note:
+1.排序、画图分场景分析
+
+code:
+class Solution {
+public:
+    vector<vector<int>> result;
+    static bool Compare(const pair<int, int> &left, const pair<int, int> &right)
+    {
+        // 起点升序排列 起点相同时按终点降序排列 
+        if (left.first != right.first) {
+            return left.first < right.first;
+        }
+        return left.second > right.second;
+    }
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        if (intervals.size() == 1) {
+            return intervals;
+        }
+        vector<pair<int, int>> intervalInfo;
+        for (auto item : intervals) {
+            intervalInfo.push_back({item[0], item[1]});
+        }
+        sort(intervalInfo.begin(), intervalInfo.end(), Compare);
+        int left = intervalInfo[0].first;
+        int right = intervalInfo[0].second;
+        for (int index = 1; index < intervalInfo.size(); index++) {
+            if (intervalInfo[index].second <= right) {
+                // 覆盖
+                continue;
+            } else if (intervalInfo[index].first <= right){
+                // 更新右边界
+                right = intervalInfo[index].second;
+            } else if (intervalInfo[index].first > right) {
+                // 将之前的left、right存到result中
+                vector<int> temp;
+                temp.emplace_back(left);
+                temp.emplace_back(right);
+                result.emplace_back(temp);
+                // 更新left、right
+                left = intervalInfo[index].first;
+                right = intervalInfo[index].second;
+            }
+        }
+        // 最后一个left、right单独处理
+        vector<int> temp;
+        temp.emplace_back(left);
+        temp.emplace_back(right);
+        result.emplace_back(temp);
+
+        return result;
+    }
+};
