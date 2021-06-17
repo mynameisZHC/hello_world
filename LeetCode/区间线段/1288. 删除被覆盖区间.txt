@@ -1,0 +1,42 @@
+note:
+1.排序、画图分场景分析
+
+code:
+class Solution {
+public:
+    static bool Compare(const pair<int, int> &left, const pair<int, int> &right)
+    {
+        // 起点按照升序排列 如果起点相同则按照终点降序排列
+        if (left.first != right.first) {
+            return left.first < right.first;
+        }
+        return left.second > right.second;
+    }
+
+    int removeCoveredIntervals(vector<vector<int>>& intervals) {
+        if (intervals.size() == 1) {
+            return 1;
+        }
+
+        vector<pair<int, int>> result;
+        for (auto item : intervals) {
+            result.push_back({item[0], item[1]});
+        }
+
+        sort(result.begin(), result.end(), Compare);
+        int left = result[0].first;
+        int right = result[0].second;
+        int delNum = 0;
+        for (int index = 1; index < result.size(); index++) {
+            // 被覆盖的场景
+            if (result[index].second <= right) {
+                delNum++;
+            } else {
+                // 更新新的区间范围
+                left = result[index].first;
+                right = result[index].second;
+            }
+        }
+        return result.size() - delNum;
+    }
+};
