@@ -15,5 +15,3 @@ ps -A -ostat,ppid,pid,cmd | grep -e '^[Zz]'
 3.Linux-ps命令学习
 0https://www.jianshu.com/p/943b90150c10
 
-4.vim使用
-https://www.jianshu.com/p/87ccdb08bced
