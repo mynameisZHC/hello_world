@@ -1,0 +1,19 @@
+note:
+1.哈希表求解
+2.因为此题是要返回索引index 所以不太适合使用先排序 再用左右指针进行查找到的方法
+
+code:
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> map;
+        for (int index = 0; index < nums.size(); index++) {
+            auto iter = map.find(target - nums[index]);
+            if (iter != map.end()) {
+                return {index, iter->second};
+            }
+            map.insert({nums[index], index});
+        }
+        return {0,0};
+    }
+};

@@ -1,0 +1,114 @@
+note:
+1.先排序再用左右指针进行查找 类似二分查找 注意去除重复的数字
+2.nsum模板
+
+code:
+class Solution {
+public:
+	vector<vector<int>> twosum(vector<int>& nums, int startIndex, int target)
+	{
+		vector<vector<int>> result;
+		int left = startIndex + 1;
+		int right = nums.size() - 1;
+		while (left < right) {
+			int leftVal = nums[left];
+			int rightVal = nums[right];
+			int sum = leftVal + rightVal;
+			if (sum == target) {
+				result.push_back({leftVal, rightVal});
+                // 跳过重复数字
+				while (left < right && nums[left] == leftVal) {
+					left++;
+				}
+                // 跳过重复数字
+				while (left < right && nums[right] == rightVal) {
+					right--;
+				}
+			}
+			else if (sum < target) {
+				left++;
+			}
+			else if (sum > target) {
+				right--;
+			}
+		}
+		return result;
+	}
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		vector<vector<int>> result;
+		sort(nums.begin(), nums.end());
+		const int size = nums.size();
+		for (int index = 0; index < nums.size(); index++) {
+			vector<vector<int>> tempResult = twosum(nums, index, -nums[index]);
+			for (auto item : tempResult) {
+				result.push_back({ item[0], item[1], nums[index] });
+			}
+			// 跳过重复数字
+			while (index < size - 2 && nums[index] == nums[index + 1]) {
+				index++;
+			}
+		}
+		return result;
+	}
+};
+
+套num模板
+code:
+class Solution {
+public:
+	vector<vector<int>> nsum(vector<int>& nums, int startIndex, int target, int n)
+	{
+		vector<vector<int>> result;
+		const int size = nums.size();
+         // 2 sum是基础case 使用双指针那一套操作
+		if (n == 2) {
+			int left = startIndex;
+			int right = nums.size() - 1;
+			while (left < right) {
+				int leftVal = nums[left];
+				int rightVal = nums[right];
+				int sum = leftVal + rightVal;
+				if (sum == target) {
+					result.push_back({ leftVal, rightVal });
+                    // 去重
+					while (left < right && nums[left] == leftVal) {
+						left++;
+					}
+                    // 去重
+					while (left < right && nums[right] == rightVal) {
+						right--;
+					}
+				}
+				else if (sum < target) {
+					left++;
+				}
+				else if (sum > target) {
+					right--;
+				}
+			}
+			return result;
+		}
+		else {
+			for (int index = startIndex; index < nums.size(); index++) {
+                // n > 2时 递归计算(n-1)sum的子问题结果
+				vector<vector<int>> tempResult = nsum(nums, index + 1, target - nums[index], n - 1);
+				for (auto item : tempResult) {
+					item.push_back(nums[index]);
+					result.push_back(item);
+				}
+                // 去重
+				while (index < size - 2 && nums[index] == nums[index + 1]) {
+					index++;
+				}
+			}
+		}
+		return result;
+	}
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		vector<vector<int>> result;
+        // 先排序
+		sort(nums.begin(), nums.end());
+		result = nsum(nums, 0, 0, 3);
+		return result;
+	}
+};
