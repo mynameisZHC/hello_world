@@ -1,0 +1,56 @@
+note:
+1.并查集 Union-Find算法
+
+code:
+class Solution {
+public:
+	int boss[26];
+	int Find(char ch)
+	{
+		int charIndex = ch - 'a';
+		while (boss[charIndex] != charIndex) {
+      // 路径压缩
+			boss[charIndex] = boss[boss[charIndex]];
+			charIndex = boss[charIndex];
+		}
+		
+		return charIndex;
+	}
+	void EqualFunc(char left, char right)
+	{
+		// UNION
+		int letftIndex = Find(left);
+		int rightIndex = Find(right);
+		boss[letftIndex] = rightIndex;
+		return;
+	}
+
+	bool NotEqualFunc(char left, char right)
+	{
+		if (Find(left) == Find(right)) {
+			return false;
+		}
+		return true;
+	}
+
+	bool equationsPossible(vector<string>& equations) {
+		for (int index = 0; index < 26; index++) {
+			boss[index] = index;
+		}
+
+		for (auto equation : equations) {
+			if (equation[1] == '=') {
+				EqualFunc(equation[0], equation[3]);
+			}
+		}
+
+		for (auto equation : equations) {
+			if (equation[1] == '!' && NotEqualFunc(equation[0], equation[3]) == false) {
+				return false;
+			}
+		}
+
+
+		return true;
+	}
+};
