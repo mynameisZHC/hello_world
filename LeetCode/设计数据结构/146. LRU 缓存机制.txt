@@ -1,0 +1,211 @@
+note:
+1.LRU 缓存淘汰算法就是一种常用策略。LRU 的全称是 Least Recently Used，也就是说我们认为最近使用过的数据应该是是「有用的」，很久都没用过的数据应该是无用的，内存满了就优先删那些很久没用过的数据
+2.哈希表查找快，但是数据无固定顺序；链表有顺序之分，插入删除快，但是查找慢。所以结合一下，形成一种新的数据结构：哈希链表 LinkedHashMap
+3.注意同时使用双向链表和哈希表时 插入和添加都需要同时对这两张数据结构进行操作 别做了一个遗漏了另一个
+
+origin
+code:
+struct LRUCacheInfo {
+    int key;
+    int value;
+    int round;
+};
+
+class LRUCache {
+public:
+    int cap;
+    int round; // 用round的大小来比较使用的远近
+    unordered_map<int, LRUCacheInfo> cacheMap;
+    map<int, int> roundToKeyMap; // <round, key> // map以round为key进行升序排序 所以map的头元素就是LRU元素
+    LRUCache(int capacity) {
+        cap = capacity;
+        round = 0;
+    }
+    
+    int get(int key) {
+        auto iter = cacheMap.find(key);
+        if (iter == cacheMap.end()) {
+            return -1;
+        } else {
+            // 删除原来的round->key
+            roundToKeyMap.erase(iter->second.round);
+            iter->second.round = round;
+            // 插入新的round->key
+            roundToKeyMap.insert({iter->second.round, key});
+            ++round;
+
+            return iter->second.value;
+        }
+    }
+    
+    void put(int key, int value) {
+        auto iter = cacheMap.find(key);
+        // 关键字已存在
+        if (iter != cacheMap.end()) {
+            iter->second.value = value;
+            // 删除原来的round->key
+            roundToKeyMap.erase(iter->second.round);
+            // 更新round
+            iter->second.round = round;
+            // 插入新的round->key
+            roundToKeyMap.insert({iter->second.round, key});
+            ++round;
+            return;
+        }
+
+        // 下面处理关键字不存在的情况
+
+        // 当前已经达到了最大容量 删除最久未使用数据
+        if (cacheMap.size() == cap) {
+            int lruKey = roundToKeyMap.begin()->second;
+            cacheMap.erase(lruKey);
+            roundToKeyMap.erase(roundToKeyMap.begin());
+        }
+
+        // 插入最新的数据
+        LRUCacheInfo lruInfo;
+        lruInfo.key = key;
+        lruInfo.value = value;
+        lruInfo.round = round;
+        cacheMap[key] = lruInfo;
+        roundToKeyMap.insert({round, key});
+        ++round;
+        return;
+    }
+};
+
+code：list+hashmap
+class LRUCache {
+public:
+	int cap;
+	list<pair<int, int>> cache; // pair<key ,value>
+	unordered_map<int, list<pair<int, int>>::iterator> hashMap; // 注意这里unordered_map的value寸的是list<pair<int, int>>::iterator 这样是为了方便后续cache.erase(hashMap[key])
+	LRUCache(int capacity) {
+		cap = capacity;
+	}
+
+	int get(int key) {
+		auto iter = hashMap.find(key);
+		if (iter == hashMap.end()) {
+			return -1;
+		}
+		pair<int, int> result = *hashMap[key];
+		cache.erase(hashMap[key]);
+		cache.push_front(result);
+		// 这步更新的操作不能忘
+		hashMap[key] = cache.begin();
+		return result.second;
+	}
+
+	void put(int key, int value) {
+		auto iter = hashMap.find(key);
+		// 键值存在的情况
+		if (iter != hashMap.end()) {
+			cache.erase(iter->second);
+			cache.push_front({ key, value });
+			hashMap[key] = cache.begin();
+			return;
+		}
+
+		// 键值不存在的情况
+		// 当前已经达到最大容量 删除最久未使用的双向链表尾部元素
+		if (cap == cache.size()) {
+			// hashMap做删除操作
+			hashMap.erase(cache.back().first);
+			// 双向链表做删除操作
+			cache.pop_back();
+		}
+		// 在双向链表头部进行插入
+		cache.push_front({ key, value });
+		// hashMap进行插入
+		hashMap[key] = cache.begin();
+		//hashMap.insert({ key, cache.begin() });
+	}
+};
+
+code:手写双向连接+hashmap
+struct DLinkedNode {
+    int key, value;
+    DLinkedNode* prev;
+    DLinkedNode* next;
+    DLinkedNode(): key(0), value(0), prev(nullptr), next(nullptr) {}
+    DLinkedNode(int _key, int _value): key(_key), value(_value), prev(nullptr), next(nullptr) {}
+};
+
+class LRUCache {
+private:
+    unordered_map<int, DLinkedNode*> cache;
+    DLinkedNode* head;
+    DLinkedNode* tail;
+    int size;
+    int capacity;
+
+public:
+    LRUCache(int _capacity): capacity(_capacity), size(0) {
+        // 使用伪头部和伪尾部节点
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    int get(int key) {
+        if (!cache.count(key)) {
+            return -1;
+        }
+        // 如果 key 存在，先通过哈希表定位，再移到头部
+        DLinkedNode* node = cache[key];
+        moveToHead(node);
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (!cache.count(key)) {
+            // 如果 key 不存在，创建一个新的节点
+            DLinkedNode* node = new DLinkedNode(key, value);
+            // 添加进哈希表
+            cache[key] = node;
+            // 添加至双向链表的头部
+            addToHead(node);
+            ++size;
+            if (size > capacity) {
+                // 如果超出容量，删除双向链表的尾部节点
+                DLinkedNode* removed = removeTail();
+                // 删除哈希表中对应的项
+                cache.erase(removed->key);
+                // 防止内存泄漏
+                delete removed;
+                --size;
+            }
+        }
+        else {
+            // 如果 key 存在，先通过哈希表定位，再修改 value，并移到头部
+            DLinkedNode* node = cache[key];
+            node->value = value;
+            moveToHead(node);
+        }
+    }
+
+    void addToHead(DLinkedNode* node) {
+        node->prev = head;
+        node->next = head->next;
+        head->next->prev = node;
+        head->next = node;
+    }
+    
+    void removeNode(DLinkedNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void moveToHead(DLinkedNode* node) {
+        removeNode(node);
+        addToHead(node);
+    }
+
+    DLinkedNode* removeTail() {
+        DLinkedNode* node = tail->prev;
+        removeNode(node);
+        return node;
+    }
+};
