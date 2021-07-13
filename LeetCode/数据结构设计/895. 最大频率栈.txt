@@ -1,0 +1,105 @@
+note:
+1.使用哈希表(unordered_map)加stack的数据结构来进行解题
+
+code:mine 性能用例过不了
+struct FreqStackStr {
+    int number;
+    int freqCount;
+    stack<int> pos;
+    FreqStackStr(){}
+    FreqStackStr(int number_, int freqCount_, stack<int> pos_) : number(number_), freqCount(freqCount_), pos(pos_) {}
+};
+class FreqStack {
+public:
+    unordered_map<int, FreqStackStr> hashMap;
+    int stackPos;
+    FreqStack() {
+        stackPos = 0;
+    }
+
+    void push(int val) {
+
+        auto iter = hashMap.find(val);
+        if (iter == hashMap.end()) {
+            stack<int> pos;
+            pos.push(++stackPos);
+            FreqStackStr item(val, 1, pos) ;
+            hashMap.insert({val, item});
+            return;
+        }
+
+        iter->second.freqCount++;
+        iter->second.pos.push(++stackPos);
+        return;
+    }
+
+    static bool Compare(const FreqStackStr &left, const FreqStackStr &right)
+    {
+        if (left.freqCount == right.freqCount && left.freqCount >= 1) {
+            return left.pos.top() > right.pos.top();
+        }
+        return left.freqCount > right.freqCount;
+    }
+
+    int GetMatchCondiNumber()
+    {
+        if (hashMap.empty()) {
+            return -1;
+        }
+
+        vector<FreqStackStr> temp;
+        for (auto iter = hashMap.begin(); iter != hashMap.end(); iter++) {
+            temp.emplace_back(iter->second);
+        }
+        sort(temp.begin(), temp.end(), Compare);
+        return temp[0].number;
+    }
+
+    int pop() {
+        int resultVal = GetMatchCondiNumber();
+
+        hashMap[resultVal].freqCount--;
+        hashMap[resultVal].pos.pop();
+        return resultVal;
+    }
+};
+
+code:
+class FreqStack {
+public:
+    int maxFreq; // 记录最大频率
+    unordered_map<int, int> valToFreq; // val -> freq
+    unordered_map<int, stack<int>> freqToVals; // freq->vals stack<int>能反映不同freq对用vals入栈的先后顺序
+    FreqStack() {
+        maxFreq = 0;
+    }
+
+    void push(int val) {
+        auto iter = valToFreq.find(val);
+        if (iter == valToFreq.end()) {
+            valToFreq.insert({val, 1});
+            freqToVals[1].push(val);
+            maxFreq = max(maxFreq, 1);
+        } else {
+            // valToFreq:freq+1
+            iter->second++;
+            // freqToVals:freq对应stack压入val
+            freqToVals[iter->second].push(val);
+            maxFreq = max(maxFreq, iter->second);
+        }
+        return;
+    }
+
+    int pop() {
+        int maxFreqVal = freqToVals[maxFreq].top();
+        // 原最大freq对应val的freq-1
+        valToFreq[maxFreqVal]--;
+        // 弹出最大freq对应stack的栈顶元素
+        freqToVals[maxFreq].pop();
+        // 如果最大freq对应stack为空则maxFreq-1
+        if (freqToVals[maxFreq].empty()) {
+            maxFreq -= 1;
+        }
+        return maxFreqVal;
+    }
+};
