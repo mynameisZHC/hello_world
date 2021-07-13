@@ -1,0 +1,167 @@
+note:
+1.利用set(平衡二叉树)存储自定义的带operator<的数据结构 可以实现o(1)时间查找到LFU数据
+
+code:mine vector<LFUCacheInfo> 比较排序 最后两个性能用例过不了
+struct LFUCacheInfo {
+    int key;
+    int value;
+    int useCount;
+    int round;
+};
+
+class LFUCache {
+public:
+    int cap;
+    int round;
+    map<int, LFUCacheInfo> lfuMap;
+
+    LFUCache(int capacity) {
+        cap = capacity;
+        round = 0;
+    }
+    
+    int get(int key) {
+        auto iter = lfuMap.find(key);
+        if (iter == lfuMap.end()) {
+            return -1;
+        } else {
+            iter->second.useCount++;
+            iter->second.round = round;
+            round++;
+            return iter->second.value;
+        }
+    }
+
+    static bool Compare(const LFUCacheInfo &left, const LFUCacheInfo &right)
+    {
+        if (left.useCount == right.useCount) {
+            return left.round < right.round;
+        }
+        return left.useCount < right.useCount;
+    }
+
+    void EraseLfuItem()
+    {
+        vector<LFUCacheInfo> lfuCache;
+        for (auto iter = lfuMap.begin(); iter != lfuMap.end(); ++iter) {
+            lfuCache.emplace_back(iter->second);
+        }
+        sort(lfuCache.begin(), lfuCache.end(), Compare);
+        lfuMap.erase(lfuCache[0].key);
+    }
+
+    void put(int key, int value) {
+        if (cap == 0) {
+            return;
+        }
+        auto iter = lfuMap.find(key);
+        // 键已存在
+        if (iter != lfuMap.end()) {
+            iter->second.value = value;
+            iter->second.useCount++;
+            iter->second.round = round;
+            round++;
+            return;
+        }
+
+        // 键不存在
+        // 当前已经达到了最大容量 删除lfu数据
+        if (lfuMap.size() == cap) {
+            // erase lfu
+            EraseLfuItem();
+        }
+
+        LFUCacheInfo lfuItem;
+        lfuItem.key = key;
+        lfuItem.value = value;
+        lfuItem.useCount = 1;
+        lfuItem.round = round;
+        lfuMap[key] = lfuItem;
+        round++;
+        return;
+    }
+};
+
+code:
+struct LFUCacheInfo {
+	int key;
+	int value;
+	int useCount;
+	int round;
+	LFUCacheInfo(int key_, int value_, int useCount_, int round_) : key(key_), value(value_), useCount(useCount_), round(round_) {}
+	bool operator < (const LFUCacheInfo &item) const{
+		if (this->useCount == item.useCount) {
+			return this->round < item.round;
+		}
+
+		return this->useCount < item.useCount;
+	}
+};
+
+class LFUCache {
+public:
+	int cap;
+	int round;
+	unordered_map<int, LFUCacheInfo> lfuMap; // 哈希表
+	set<LFUCacheInfo> lfuSet; // 平衡二叉树
+	LFUCache(int capacity) {
+		cap = capacity;
+		round = 0;
+		lfuMap.clear();
+		lfuSet.clear();
+	}
+
+	int get(int key) {
+		auto iter = lfuMap.find(key);
+		if (iter == lfuMap.end()) {
+			return -1;
+		}
+
+		LFUCacheInfo item = (iter->second);
+		// 从平衡二叉树set中删除旧的缓存
+		lfuSet.erase(item);
+		// 更新哈希表对应内容
+		iter->second.useCount++;
+		iter->second.round = ++round;
+		// 新缓存插入平衡二叉树set中
+		lfuSet.insert(iter->second);
+		return iter->second.value;
+		
+	}
+
+	void put(int key, int value) {
+		if (cap == 0) {
+			return;
+		}
+		auto iter = lfuMap.find(key);
+		// 键已存在
+		if (iter != lfuMap.end()) {
+			// 类似上面get操作
+			LFUCacheInfo item = (iter->second);
+			lfuSet.erase(item);
+
+			iter->second.value = value;
+			iter->second.useCount++;
+			iter->second.round = ++round;
+
+			lfuSet.insert(iter->second);
+			return;
+		}
+
+		// 键不存在
+		// 当前已经达到了最大容量 删除lfu数据
+		if (lfuMap.size() == cap) {
+			// erase lfu
+			// 从哈希表和平衡二叉树中删除最近最少使用的缓存
+			LFUCacheInfo realLfuitem = *lfuSet.begin();
+			lfuSet.erase(realLfuitem);
+			lfuMap.erase(realLfuitem.key);
+		}
+
+		LFUCacheInfo lfuItem(key, value, 1, ++round);
+		// 将新缓存放入哈希表和平衡二叉树中
+		lfuMap[key] = lfuItem;
+		lfuSet.insert(lfuItem);
+		return;
+	}
+};
