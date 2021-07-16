@@ -1,0 +1,59 @@
+note:
+1.标准比较排序，需要O(nlogn)；
+2.二分搜索O(logn)+ 插入 O(n) ≈ O(n) :插入排序
+
+code:mine 最后性能用例过不了
+class MedianFinder {
+public:
+    vector<int> numVec;
+    /** initialize your data structure here. */
+    MedianFinder() {
+        numVec.clear();
+    }
+
+    void addNum(int num) {
+        numVec.emplace_back(num);
+    }
+
+    double findMedian() {
+        sort(numVec.begin(), numVec.end());
+        // 长度是奇数
+        if (numVec.size() % 2 == 1) {
+            int index = numVec.size() / 2;
+            return numVec[index];
+        } else {// 长度是偶数
+            int index =  numVec.size() / 2;
+            double result = (numVec[index] + numVec[index -1]) / 2.0;
+            return result;
+        }
+    }
+};
+
+code:
+class MedianFinder {
+public:
+    vector<int> numVec;
+    /** initialize your data structure here. */
+    MedianFinder() {
+        numVec.clear();
+    }
+
+    void addNum(int num) {
+        if (numVec.empty()) {
+            numVec.emplace_back(num);
+        } else {
+            numVec.insert(lower_bound(numVec.begin(), numVec.end(), num), num); // 使用lower_bound进行插入排序
+        }
+    }
+
+    double findMedian() {
+        if (numVec.size() % 2 == 1) {
+            int index = numVec.size() / 2;
+            return numVec[index];
+        } else {// 长度是偶数
+            int index =  numVec.size() / 2;
+            double result = (numVec[index] + numVec[index -1]) / 2.0;
+            return result;
+        }
+    }
+};
