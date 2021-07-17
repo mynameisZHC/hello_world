@@ -1,239 +1,167 @@
+们定义一种目录结构字符串(类似Windows的tree/f的输出内容)，用它来表达目录树的结构，如图所示：
+http://oj.rnd.huawei.com/public/upload/6c5ed14747.png
 
-某客户的核心网服务器组成了一个pool，假定使用一个二叉树表示pool里面的服务器，每个结点的值表示对应服务器的处理能力。
-由于业务发展，需要将该pool拆分成两个处理能力相等的pool。即去掉树上的一条边，将其均匀拆成两棵子树（两子树的结点值之和相等）。
+·         目录结构字符串的输入仅含数字、字母和|-，其中：|- 表示子目录的层次符号；字母或数字表示目录名。
 
-现给出数组A表示的二叉树结构，如果该二叉树可以均匀拆分，请找到拆分出的新子树的根结点，输出该节点在数组A中的下标（用例保证结果的唯一性）；如果不能均匀拆分，输出 -1。
+·         某目录的子目录的顺序以输入先后顺序为准。
+
+·         某目录的多个子目录不能同名，如果出现多个，则只保留第一个，后续的输入忽略。
+
+·         无对应的父目录，属于异常情况，直接忽略。
+
+给定一个目录结构字符串，请按先后顺序删除所有目录，并依次输出删除的目录名称：
+
+·         如果是叶子目录，直接删除。
+
+·         如果某目录含有子目录，则需要先删除其子目录。
+
+如上图所示的输出为C D F E B lib32 A
+
+解答要求时间限制：1000ms, 内存限制：64MB
 
 输入
 
-第一行：一个整数 N，表示数组 A 的长度，取值范围 [1, 10000]。
-第二行：一个长度为 N 的整数数组 A，表示二叉树的结构，以一种层序方式给出各节点的值：
-
-首个值是根节点的值。
-
--1表示空节点，不是树上的有效节点，且它的子节点不再给出。
-
-数组元素的取值范围 [0, 10^9]。
+首行是一个整数 n，表示目录结构字符串的行数，取值范围 [1, 50)
+接下来n行，每行字符串表示一个待处理的目录，目录名长度为[1,10]，整行字符串长度为 [1,100]。
+用例保证，有且仅有一个根目录。
 
 输出
 
-一个整数，表示新子树的根结点在数组A的下标；或者 -1 。
+字符串序列，表示依次删除的目录，目录之间以单空格分隔。
 
 样例
 
-输入样例 1
+输入样例 1 复制
 
-7
-
-9 13 12 -1 -1 2 8
-
-输出样例 1
-
-2
-
- 
-
-输入样例 2
 
 10
 
-7 8 10 4 -1 -1 3 1 -1 2
+|-B
 
-输出样例 2
+A
 
--1
+|-B
+
+|-|-C
+
+|-|-D
+
+|-|-D
+
+|-|-|-|-D
+
+|-|-E
+
+|-|-|-F
+
+|-lib32
+
+ 
+
+输出样例 1
+
+
+C D F E B lib32 A
+
+ 
 
 提示
 
-样例1：
-9 13 12 -1 -1 2 8
-表示如下的二叉树结构：9是根节点；第二层分别为13和12；第三层为-1 -1 2 8，其中-1 和 -1表示节点 13 无子节点，2 和 8 是节点 12 的左右子节点。
+样例1解释：
+|-B     //非顶层目录，并且它前面无对应的父目录，该行输入被忽略
+A     //A为顶层目录
+|-B     //B为第二层，它所跟随的上一层目录为A，因此B为A的子目录
+|-|-C     //C为第三层，它紧跟的上一层目录为B，因此其父目录为B。
+|-|-D     //D为第三层，它紧跟的上一层目录为B，因此其父目录为B，它和C为兄弟关系。
+|-|-D     //D为第三层，与先输入的第三层目录D同名，该行输入被忽略。
+|-|-|-|-D   //D为第五层，前面没有第四层目录，因此无对应的父目录，该行输入被忽略。
+|-|-E      //E为第三层，它紧跟的上一层目录为B，因此其父目录为B，它和C、D为兄弟关系。
+|-|-|-F      //它紧跟的上一层目录为E，因此其父目录为E。
+|-lib32     //它紧跟的上一层目录为A，因此其父目录为A。
 
-    9
+按先后顺序删除时：A有子目录B、lib32，先删除B时，其子目录C、D、E需要被先删除，C、D无子目录直接被删除，E有子目录F则先删除F。以此类推，最终输出为 C D F E B lib32 A
 
-   / \
-
- 13  12
-
-     / \
-
-    2   8
-
-可拆为：
-
-    9             
-
-   /
-
-  13    
-
- 和
-
-     12
-
-     / \
-
-    2   8
-
-新子树的根结点在数组A中的下标为2。
-
-样例2：
-7 8 10 4 -1 -1 3 1 -1 2
-表示如下的二叉树状结构：节点8的右子节点是空节点，该空节点的子节点不用在数组中给出；节点10的左子节点是空节点，该空节点的子节点也未在数组中给出。
-
-      7
-
-     / \
-
-    8  10
-
-   /     \
-
-  4       3
-
- /       /
-
-1       2
-
-原树无法按要求拆分，直接输出-1。
+答题要求：结果可信和过程可信同样重要，您编写的代码需要符合可信的要求（包括通用编码规范、安全编码规范和圈复杂度）。
 
 
-class Solution {
-
-public:
-
-    // 待实现函数，在此函数中填入答题代码
-
-    int SplitEqualTreeAndOutputNewRoot(const vector<int>& tree)
-
-    {
-        
-
+struct Node{
+    string name;
+    int level;
+    bool operator < (const Node &node) const{
+        if (this->name == node.name) {
+            return this->level < node.level;
+        }
+        return this->name < node.name;
     }
-
-    int64_t GetSumForNode(const vector<vector<size_t>>& bi_tree, const vector<int>& tree, size_t node)
-
-    {
-
-
-
-    }
-
-
-
 };
-
-
-
-请设计一个备忘录系统，要求有以下功能：
-
-·         addEvent(int startDate, String content, int num, int period) – 自日期 startDate 开始（startDate 包含在内），添加 num 个以 period 为间隔周期待办事项 content。例如若命令为 addEvent(0,"a",4,2)，表示于日期 0，2，4，6 分别添加待办事项 "a"。
-
-o    返回本次操作共计新增待办事项的数量。若部分日期上已存在该事项，无论该事项是否设置为已完成，这些日期不需添加该事项。
-
-·         finishEvent(int date, String content) – 将日期 date 上的 content 事项设置为已完成。
-
-o    若该日期上不存在此事项，或该日期上此事项已完成，返回 false；
-
-o    若设置操作完成，则返回 true。
-
-·         removeEvent(int date, String content) – 移除日期 date 上的 content 事项。
-
-o    若该日期上不存在此事项，返回 false；
-
-o    若移除操作完成，则返回 true。
-
-·         queryTodo(int startDate, int endDate) – 查询从 startDate 到 endDate（起止日期均包含在内）这段日期内所有的未完成的 content 事项，并将查询到的事项以字符串形式按日期升序记于数组后返回，若查询到相同日期的多条待办事项，则将其按字典序排列。
-
-示例 1：
-
-输入：["MemoSystem","addEvent","queryTodo","finishEvent","removeEvent"]
-[[],[2,"eat a burger",2,3],[0,5],[2,"eat a burger"],[2,"eat a burger"]]
-输出：[null,2,["eat a burger","eat a burger"],true,true]
-
-解释：
-MemoSystem ms = MemoSystem();
-ms.addEvent(2,"eat a burger",2,3); // 自日期 2 开始，添加 2 个间隔周期为 3 的待办事项 "eat a burger"，即在日期 2、5 添加该待办事项。本次操作共新添加了 2 个待办事项，返回 2
-ms.queryTodo(0,5); //查询自日期 0 至日期 5 的所有未完成的事项，返回数组 ["eat a burger","eat a burger"]
-ms.finishEvent(2,"eat a burger"); // 将系统中日期为 2 的待办事项 "eat a burger" 设置为已完成，返回 true
-ms.removeEvent(2,"eat a burger"); // 移除系统中日期为 2 的事项 "eat a burger"，返回 true
-注：输出中的 null 表示此对应函数无输出（其中：C 的构造函数有返回值，但是也是无需输出）
-
-示例 2：
-
-输入：
-["MemoSystem","addEvent","addEvent","removeEvent","finishEvent","addEvent","addEvent","queryTodo","queryTodo","finishEvent","addEvent"]
-[[],[2,"save files",1,1],[2,"eat a burger",1,1],[2,"drink water"],[1,"drink water"],[0,"eat a burger",5,2],[2,"save files",1,1],[0,4],[10,11],[2,"eat a burger"],[2,"eat a burger",1,1]]
-输出：[null,1,1,false,false,4,0,["eat a burger","eat a burger","save files","eat a burger"],[],true,0]
-
-解释：
-MemoSystem ms = MemoSystem();
-第 3 个命令 ms.addEvent(2,"eat a burger",1,1); // 同一个日期可以增加不同的待办事项，本次操作共新添加了 1 个待办事项，返回 1
-第 6 个命令 ms.addEvent(0,"eat a burger",5,2); // 自日期 0 开始，添加 5 个间隔周期为 2 的待办事项 "eat a burger"，即在日期 0，2，4，6，8 添加该待办事项。由于日期 2 的记录中已存在该事项，因此本次操作共新添加了 4 个待办事项，返回 4
-第 8 个命令 ms.queryTodo(0,4); // 查询自日期 0 至日期 4 的所有未完成的事项，按日期返回，其中日期 2 的待办事项需按字典序排列，返回数组 ["eat a burger","eat a burger","save files","eat a burger"]
-第 9 个命令 ms.queryTodo(10,11); // 查询自日期 10 至日期 11 的所有未完成的事项，返回空数组 []
-
-注：输出中的 null 表示此对应函数无输出（其中：C 的构造函数有返回值，但是也是无需输出）
-
-提示：
-
-1 <= addEvent,finishEvent,removeEvent,queryTodo 总操作数 <= 1000
-
-0 <= startDate <= endDate <= 1000
-
-0 < num, period, 0 <= startDate + (num - 1) * period <= 1000
-
-1 <= content.length <= 20 ，仅包含小写字母、大写字母与空格
-
-0 <= date <= 1000
-
-·         queryTodo 函数对于 Java/Js/Python/Go 语言，如果返回的记录为空，则返回空数组
-
-
-class MemoSystem {
-
+class Solution{
 public:
-
-    MemoSystem() {}
-
-
-
-    int AddEvent(int startDate, string content, int num, int period)
-
+    int maxLevel = 0;
+    map<int, Node> levelLastNode;
+    map<int, set<string>> levelNodesName;
+    map<Node, vector<Node>> nodeToChilds;
+    string result;
+    void dfs(const Node &node)
     {
+        vector<Node> childs = nodeToChilds[node];
+        // 叶子节点
+        if (childs.empty()) {
+            result += result.empty() ?  node.name : " " + node.name;
+            return;
+        }
 
+        for (auto child : childs) {
+            dfs(child);
+        }
 
+        result += result.empty() ?  node.name : " " + node.name;
+        return;
+    }
+    void FillLevelNode(int level, string name)
+    {
+        Node node;
+        node.name = name;
+        node.level = level;
+        vector<Node> tempNodes;
+        // 根目录
+        if (level == 0) {
+            levelLastNode[0] = node;
+            nodeToChilds[node] = tempNodes;
+            return;
+        }
 
+        if (levelLastNode.find(level - 1) == levelLastNode.end()) {
+            return;
+        }
+
+        if (levelNodesName[level].count(name) > 0) {
+            return;
+        }
+
+        // 上一层的最后一个node插入此节点
+        nodeToChilds[ levelLastNode[level - 1]].push_back(node);
+
+        //本层醉红颜一个节点更新为此节点
+        levelLastNode[level] = node;
+
+        //本层名字列表更
+        levelNodesName[level].insert(name);
+
+        //本节点更新插入nodeToChilds
+        nodeToChilds[node] = tempNodes;
+        return;
     }
 
-
-
-    bool FinishEvent(int date, string content)
-
+    string delAllDirectorys(const vector<string> &directorys)
     {
-
-
+        for (auto direct : directorys) {
+            auto pos = direct.find_first_not_of("|-");
+            int level = pos / 2;
+            string name = direct.substr(pos);
+            FillLevelNode(level, name);
+        }
+        Node root = levelLastNode[0];
+        dfs(root);
+        return result;
     }
-
-
-
-    bool RemoveEvent(int date, string content)
-
-    {
-
-
-
-    }
-
-
-
-    vector<string> QueryTodo(int startDate, int endDate)
-
-    {
-
-
-
-    }
-    
-
 };
