@@ -199,3 +199,131 @@ ERROR
 
 
 string Translate(const string &input)
+
+
+
+/*
+class Solution {
+public:
+	int index = 0;
+	string Makestring(string records)
+	{
+		string tempStr;
+		for (; index < records.size(); ++index) {
+			if (records[index] == ')') {
+				++index;
+				break;
+			}
+
+			if (records[index] == '(') {
+				index++;
+				tempStr += Makestring(records);
+			}
+
+			tempStr += records[index];
+		}
+
+		++index;
+		string repeatTimes;
+		while (isdigit(records[index])) {
+			repeatTimes += records[index];
+			++index;
+		}
+		int repeat = stoi(repeatTimes);
+		string copyStr = tempStr;
+		while (repeat > 1)
+		{
+			tempStr += copyStr;
+			repeat--;
+		}
+		++index;
+		return tempStr;
+	}
+
+	string UnzipString(string records)
+	{
+		string reuslt;
+		for (; index < records.size(); ++index) {
+			if (records[index] == '(') {
+				index++;
+				reuslt += Makestring(records);
+			}
+			reuslt += records[index];
+		}
+
+		return reuslt;
+	}
+};
+*/
+
+class Solution {
+public:
+	unordered_map<string, string> chiTOEng;
+	unordered_map<string, string> engTOChi;
+	string result;
+	bool ilegalFlag = false;
+	void dfs(string str, bool doubleLabel)
+	{
+		if (str.empty()) {
+			return;
+		}
+		for (int index = 1; index <= str.size(); index++) {
+			string tempStr (str.begin(), str.begin() + index);
+
+			auto chiIter = chiTOEng.find(tempStr);
+			if (chiIter != chiTOEng.end()) {
+
+				// 处理Si Six特殊情况
+				if (chiIter->first == "Si") {
+					auto sixIter = str.find("Six");
+					// str中有Six
+					if (sixIter != string::npos) {
+						continue;
+					}
+				}
+
+				if (doubleLabel) {
+					ilegalFlag = true;
+					return;
+				}
+
+				result += chiIter->second;
+				dfs(str.substr(index), false);
+				break;
+			}
+
+			auto engIter = engTOChi.find(tempStr);
+			if (engIter != engTOChi.end()) {
+				if (doubleLabel) {
+					result += engIter->second + engIter->second;
+				}
+				else {
+					result += engIter->second;
+				}
+				dfs(str.substr(index), false);
+				break;
+			}
+
+			if (tempStr == "Double") {
+				dfs(str.substr(index), true);
+				break;
+			}
+		}
+		return;
+	}
+	string Translate(const string &input)
+	{
+		unordered_map<string, string> TempchiTOEng = { { { "Yi" }, { "One" } }, { { "Er" }, { "Two" } }, { { "San" }, { "Three" } }, { { "Si" }, { "Four" } }, { { "Wu" }, { "Five" } }, { { "Liu" }, { "Six" } }, { { "Qi" }, { "Seven" } }, { { "Ba" }, { "Eight" } }, { { "Jiu" }, { "Nine" } } ,{{ "Ling" }, {"Zero"}} };
+		unordered_map<string, string> TempengTOChi = { { { "One" }, { "Yi" } }, { { "Two" }, { "Er" } }, { { "Three" }, { "San" } }, { { "Four" }, { "Si" } }, { { "Five" }, { "Wu" } }, { { "Six" }, { "Liu" } }, { { "Seven" }, { "Qi" } }, { { "Eight" }, { "Ba" } }, { { "Nine" }, { "Jiu" } }, { { "Zero" }, { "Ling" } } };
+		chiTOEng = TempchiTOEng;
+		engTOChi = TempengTOChi;
+		dfs(input, false);
+		if (ilegalFlag) {
+			return "ERROR";
+		}
+		else {
+			return result;
+		}
+	}
+	
+};
