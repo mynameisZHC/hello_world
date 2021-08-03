@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
   for (int ii=0;ii<10000;ii++)
   {
-    // ´ÓÃüÁîÐÐÊäÈëÄÚÈÝ¡£
+    // Â´Ã“ÃƒÃ¼ÃÃ®ÃÃÃŠÃ¤ÃˆÃ«Ã„ÃšÃˆÃÂ¡Â£
     memset(buf,0,sizeof(buf));
     printf("please input:"); scanf("%s",buf);
     // sprintf(buf,"1111111111111111111111ii=%08d",ii);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     memset(buf,0,sizeof(buf));
     if (read(sockfd,buf,sizeof(buf)) <=0) 
     { 
-      printf("read() failed.\n");  close(sockfd);  return -1;
+      printf("read() failed\n");  close(sockfd);  return -1;
     }
 
     printf("recv:%s\n",buf);
