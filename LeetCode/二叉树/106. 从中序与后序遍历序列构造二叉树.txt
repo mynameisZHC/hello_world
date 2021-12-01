@@ -1,0 +1,30 @@
+code:
+class Solution {
+public:
+    TreeNode* dfs(const vector<int>& inorder, const vector<int>& reverPostorder, pair<int, int>inorderIndex, pair<int, int>reversePostorderIndex)
+    {
+       if (reversePostorderIndex.first >= reversePostorderIndex.second) {
+            return nullptr;
+        }
+        // 根节点值就是反的后序遍历的起始值
+        int rootVal = reverPostorder[reversePostorderIndex.first];
+        auto iter =  find(inorder.begin() + inorderIndex.first, inorder.begin() + inorderIndex.second, rootVal);
+        int len = (iter - inorder.begin()) - inorderIndex.first;
+        // 左子树对应中序、后序索引
+        pair<int ,int> leftInorderIndex = {inorderIndex.first, inorderIndex.first + len};
+        pair<int ,int> leftReverPostorderIndex = {reversePostorderIndex.second - len, reversePostorderIndex.second};
+        // 右子树对应中序、后序索引
+        pair<int ,int> rightInorderIndex = {inorderIndex.first + len + 1, inorderIndex.second};
+        pair<int ,int> rightReverPostorderIndex = {reversePostorderIndex.first + 1 , reversePostorderIndex.second - len};
+
+        TreeNode *node = new TreeNode(rootVal);
+
+        node->left = dfs(inorder, reverPostorder, leftInorderIndex, leftReverPostorderIndex);
+        node->right = dfs(inorder, reverPostorder, rightInorderIndex, rightReverPostorderIndex);
+        return node;
+    }
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        vector<int> reverPostorder(postorder.rbegin(), postorder.rend());
+        return dfs(inorder, reverPostorder, {0, inorder.size()}, {0, reverPostorder.size()});
+    }
+};

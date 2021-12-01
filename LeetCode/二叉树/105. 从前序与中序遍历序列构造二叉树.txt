@@ -1,0 +1,29 @@
+code:
+class Solution {
+public:
+    TreeNode* dfs(const vector<int>& preorder, const vector<int>& inorder, pair<int, int>preOrderIndex, pair<int, int>inorderIndex)
+    {
+        if (preOrderIndex.first >= preOrderIndex.second) {
+            return nullptr;
+        }
+        // 根节点值就是前序编译的起始值
+        int rootVal = preorder[preOrderIndex.first];
+        auto iter =  find(inorder.begin() + inorderIndex.first, inorder.begin() + inorderIndex.second, rootVal);
+        int len = (iter- inorder.begin()) - inorderIndex.first;
+        // 构造根节点
+        TreeNode *node = new TreeNode(rootVal);
+        // 左子树对应前序、中序索引
+        pair<int, int> leftPreorderIndex = {preOrderIndex.first + 1,  preOrderIndex.first + 1 + len};
+        pair<int, int> leftInoderderIndex = {inorderIndex.first,  inorderIndex.first + len};
+        // 右子树对应前序、中序索引
+        pair<int, int> rightPreorderIndex = {preOrderIndex.first + 1 + len,  preOrderIndex.second};
+        pair<int, int> rightInoderderIndex = {inorderIndex.first + len + 1,  inorderIndex.second};
+
+        node->left = dfs(preorder, inorder, leftPreorderIndex, leftInoderderIndex);
+        node->right = dfs(preorder, inorder, rightPreorderIndex, rightInoderderIndex);
+        return node;
+    }
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        return dfs(preorder, inorder, {0, preorder.size()}, {0, inorder.size()});
+    }
+};
