@@ -1,0 +1,33 @@
+note:
+1.使用字符串标识二叉树前(中、后)序结果
+2.使用hash表标识<序列化字符串, 出现次数>
+
+code:
+class Solution {
+public:
+    unordered_map<string, int> mapInfo; // <序列化字符串, 出现次数>
+    vector<TreeNode*> finalResult;
+    string dfs(TreeNode* node)
+    {
+        string result;
+        if (node == nullptr) {
+            // 空节点用#标识
+            result.push_back('#');
+            return result;
+        }
+        // 前序遍历(前序/后序都可以 中序不行)
+        result += to_string(node->val) + '*';
+        result += dfs(node->left);
+        result += dfs(node->right);
+        // 只有在已出现次数为1次情况下才压入当前节点到结果中
+        if (mapInfo[result] == 1) {
+            finalResult.push_back(node);
+        }
+        mapInfo[result]++;
+        return result;
+    }
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+        dfs(root);
+        return finalResult;
+    }
+};
