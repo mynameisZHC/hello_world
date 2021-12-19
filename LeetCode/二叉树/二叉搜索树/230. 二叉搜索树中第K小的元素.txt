@@ -1,0 +1,27 @@
+note:
+1.二叉搜索树中序遍历值递增
+
+code:
+class Solution {
+public:
+    int count;
+    int result;
+    void inorder(TreeNode* node)
+    {
+        if (node == nullptr) {
+            return;
+        }
+        inorder(node->left);
+        count--;
+        if (count == 0) {
+            result = node->val;
+            return;
+        }
+        inorder(node->right);
+    }
+    int kthSmallest(TreeNode* root, int k) {
+        count = k;
+        inorder(root);
+        return result;
+    }
+};
