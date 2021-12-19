@@ -1,0 +1,24 @@
+note:
+1. BST使用先右子树、根、左子树的遍历顺序 此时得到的节点值是降序出现的 
+
+code:
+class Solution {
+public:
+    int sum = 0; // 维护一个外部累加变量 sum
+    void traverse(TreeNode* node)
+    {
+        if (node == nullptr) {
+            return;
+        }
+        // BST使用先右子树、根、左子树的遍历顺序 此时得到的节点值是降序出现的 
+        traverse(node->right);
+        sum += node->val;
+        node->val = sum; // 把 sum 赋值给 BST 中的每一个节点
+        traverse(node->left);
+        return;
+    }
+    TreeNode* convertBST(TreeNode* root) {
+        traverse(root);
+        return root;
+    }
+};
