@@ -1,0 +1,29 @@
+code:
+class Solution {
+public:
+    long long currentMinVal;
+    bool isNotBinaSearchFlag = false;
+    void Inorder(TreeNode* node)
+    {
+        if (isNotBinaSearchFlag) {
+            return;
+        }
+
+        if (node == nullptr) {
+            return;
+        }
+        Inorder(node->left);
+        if (node->val <= currentMinVal) {
+            isNotBinaSearchFlag = true;
+            return;
+        } else {
+            currentMinVal = node->val;
+        }
+        Inorder(node->right);
+    }
+    bool isValidBST(TreeNode* root) {
+        currentMinVal = (long long)INT_MIN - 1; // 注意数据范围 使用long long取下限
+        Inorder(root);
+        return !isNotBinaSearchFlag;
+    }
+};
