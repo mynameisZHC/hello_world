@@ -1,0 +1,34 @@
+code:
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+
+        if (key > root->val) {
+            root->right = deleteNode(root->right, key); // 要删除的节点在右子树侧
+        } else if (key < root->val) {
+            root->left = deleteNode(root->left, key); // 要删除的节点在左子树侧
+        } else if (key == root->val) { // 找到要删除的节点
+            if (root->left == nullptr && root->right == nullptr) { // 要删除的节点为叶子节点
+                return nullptr;
+            }
+            if (root->left != nullptr && root->right == nullptr)  { // 要删除的节点有左子树
+                return root->left;
+            }
+            if (root->left == nullptr && root->right != nullptr) {  // 要删除的节点有右子树
+                return root->right;
+            }
+            if (root->left != nullptr && root->right != nullptr) { // 要删除的节点有左右子树
+                TreeNode* minNode = root->right;
+                while (minNode->left != nullptr) { // 找到root右子树最小节点
+                    minNode = minNode->left;
+                }
+                minNode->left = root->left; // 把原左子树放到原右子树最小节点的左子树
+                return root->right; // 返回右子树节点代替root
+            }
+        }
+        return root;
+    }
+};
