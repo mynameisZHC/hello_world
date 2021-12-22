@@ -1,0 +1,17 @@
+code:
+class Solution {
+public:
+    TreeNode* searchBST(TreeNode* root, int val) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        if (val < root->val) { // 左子树侧去寻找
+            return searchBST(root->left, val);
+        }
+        if (val > root->val) { // 右子树侧去寻找
+            return searchBST(root->right, val);
+        }
+        // 走到这儿就是找到了目标节点
+        return root;
+    }
+};
