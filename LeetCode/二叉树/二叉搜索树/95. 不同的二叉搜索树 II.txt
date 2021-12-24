@@ -1,0 +1,30 @@
+code:
+class Solution {
+public:
+    vector<TreeNode*> traverse(int lo, int hi)
+    {
+        vector<TreeNode*> result;
+        if (lo > hi) { 
+            result.push_back(nullptr);
+            return result;
+        }
+        for (int num = lo; num <= hi; num++) {
+            vector<TreeNode*> leftNodes = traverse(lo, num - 1);
+            vector<TreeNode*> rightNodes = traverse(num + 1, hi);
+            // 穷举所有左右子树的组合
+            for (const auto &left : leftNodes) {
+                for (const auto &right : rightNodes) {
+                    // num作为root节点的值
+                    TreeNode* root = new TreeNode(num);
+                    root->left = left;
+                    root->right = right;
+                    result.push_back(root);
+                }
+            }
+        }
+        return result;
+    }
+    vector<TreeNode*> generateTrees(int n) {
+        return traverse(1, n);
+    }
+};
