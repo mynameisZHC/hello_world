@@ -1,0 +1,28 @@
+code:
+class Solution {
+public:
+    map<int, int> memo; // 备忘录 <长度, 组合数>
+    int traverse(int lo, int hi)
+    {
+        if (lo > hi) {
+            return 1; // lo > hi即对应nullptr 此时需要返回1
+        }
+
+        if (memo.find(hi - lo) != memo.end()) {
+            return memo[hi - lo];
+        }
+
+        int res = 0;
+        for (int num = lo; num <= hi; num++) { // lo到hi区间范围每个值分别作为根节点
+            int leftCount = traverse(lo, num - 1); // 左子树组合数
+            int rightCount = traverse(num + 1, hi); // 右子树组合数
+            res += leftCount * rightCount;
+        }
+        // 结果存入备忘录
+        memo[hi - lo] = res;
+        return res;
+    }
+    int numTrees(int n) {
+        return traverse(1, n);
+    }
+};
