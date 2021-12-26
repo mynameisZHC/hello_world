@@ -1,0 +1,42 @@
+note:
+后序遍历使用时机：如果当前节点要做的事情需要通过左右子树的计算结果推导出来，此时就需要用后序遍历
+
+code:
+ struct BstNodeInfo {
+     bool isBstFlag_;
+     int sum_;
+     int minVal_;
+     int maxVal_;
+     BstNodeInfo(bool isBstFlag):isBstFlag_(isBstFlag),sum_(0),minVal_(INT_MIN),maxVal_(INT_MAX){}
+     BstNodeInfo(bool isBstFlag, int sum, int minVal, int maxVal):isBstFlag_(isBstFlag),sum_(sum),minVal_(minVal),maxVal_(maxVal){}
+ };
+class Solution {
+public:
+    int maxSum;
+    BstNodeInfo traverse(TreeNode* node)
+    {
+        if (node == nullptr) {
+            return BstNodeInfo(true, 0, INT_MAX, INT_MIN); // nullptr节点也是满足BST条件的 且它返回的最小最大值不能影响后续真正BST的判断 
+        }
+        BstNodeInfo leftBstNodeInfo = traverse(node->left);
+        BstNodeInfo rightBstNodeInfo = traverse(node->right);
+        /******************后序遍历位置**********************/
+        // 当前节点满足BST条件:左、右子树满足BST条件；当前节点值大于左子树上最大值 小于右子树上最小值
+        if (leftBstNodeInfo.isBstFlag_ && rightBstNodeInfo.isBstFlag_ &&
+            node->val > leftBstNodeInfo.maxVal_ && node->val < rightBstNodeInfo.minVal_) {
+            int sum = leftBstNodeInfo.sum_ + rightBstNodeInfo.sum_ + node->val;
+            if (sum > maxSum) { // 更新最大键值和
+                maxSum = sum;
+            }
+            int minVal = min(leftBstNodeInfo.minVal_, node->val);
+            int maxVal = max(rightBstNodeInfo.maxVal_, node->val);
+            return BstNodeInfo(true, sum, minVal, maxVal);
+        }
+        return BstNodeInfo(false); // node不是BST 其它几个结构体成员值就无意义
+    }
+    int maxSumBST(TreeNode* root) {
+        maxSum = 0;
+        traverse(root);
+        return maxSum;
+    }
+};
