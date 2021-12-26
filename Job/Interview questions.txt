@@ -10,3 +10,6 @@ https://cloud.tencent.com/developer/article/1631792
 整个程序中声明可以有多次，但定义有且仅能有一次。
 链接阶段编译器会去别的目标文件生成的符号表中去寻找本身自己所声明符号对应的定义。
 
+2.https://www.nowcoder.com/discuss/671349?channel=-1&source_id=profile_follow_post_nctrack
+
+3.https://www.nowcoder.com/discuss/672750?channel=-1&source_id=profile_follow_post_nctrack
