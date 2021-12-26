@@ -1,0 +1,128 @@
+note:
+二叉树遍历方式：递归方式有前序、中序(此题不行)、后序;迭代方式一般是层级遍历
+
+code:前序遍历
+class Codec {
+public:
+
+string serialize(TreeNode* root) {
+	if (root == nullptr) {
+		return "*#";
+	}
+	string result;
+	result += to_string(root->val) + "#";
+	result += serialize(root->left);
+	result += serialize(root->right);
+	
+	return result;
+}
+
+vector<TreeNode*> spiltStr(string data)
+{
+	vector<TreeNode*> result;
+	auto stratPos = data.find("#");
+	while (stratPos != string::npos)
+	{
+		string str = data.substr(0, stratPos);
+		if (str == "*") {
+			result.push_back(nullptr);
+		}
+		else {
+			TreeNode *node = new TreeNode(stoi(str));
+			result.push_back(node);
+		}
+		data = data.substr(stratPos + 1);
+		stratPos = data.find("#");
+	}
+	return result;
+}
+
+TreeNode* Traverse(vector<TreeNode*> &nodesInfo)
+{
+	if (nodesInfo.empty()) {
+		return nullptr;
+	}
+	TreeNode* node = nodesInfo[0];
+	nodesInfo.erase(nodesInfo.begin());
+	if (node == nullptr) {
+		return nullptr;
+	}
+	node->left = Traverse(nodesInfo);
+	node->right = Traverse(nodesInfo);
+	return node;
+}
+
+TreeNode* deserialize(string data) {
+	vector<TreeNode*> nodesInfo = spiltStr(data);
+	return Traverse(nodesInfo);
+}
+};
+
+code:层级遍历
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if (root == nullptr) {
+            return "*";
+        }
+        string result;
+        queue<TreeNode*> que;
+        que.push(root);
+        while (!que.empty()) {
+            TreeNode *node = que.front();
+            que.pop();
+            if (node == nullptr) {
+                result += "*#";
+                continue;
+            }
+            result += to_string(node->val) + "#";
+            que.push(node->left);
+            que.push(node->right);  
+        }
+        return result;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty() || data == "*") {
+            return nullptr;
+        }
+        queue<TreeNode*> que;
+        auto firstPos =  data.find("#");
+        string str = data.substr(0, firstPos);
+        data = data.substr(firstPos + 1);
+        TreeNode* root = new TreeNode(stoi(str));
+        que.push(root);
+        while (!que.empty() && !data.empty()) {
+            TreeNode* node = que.front();
+            que.pop();
+            // node对应的左侧子节点
+            auto leftpos = data.find("#");
+            string leftstr = data.substr(0, leftpos);
+            if (leftstr == "*") {
+                node->left = nullptr;
+            } else {
+                TreeNode* leftNode = new TreeNode(stoi(leftstr));
+                node->left = leftNode;
+                que.push(leftNode);
+            }
+
+            data = data.substr(leftpos + 1);
+            // node对应的右侧子节点
+            auto rightpos = data.find("#");
+            string rightstr = data.substr(0, rightpos);
+            if (rightstr == "*") {
+                node->right = nullptr;
+            } else {
+                TreeNode* rightNode = new TreeNode(stoi(rightstr));
+                node->right = rightNode;
+                que.push(rightNode);
+            }
+
+            data = data.substr(rightpos + 1);
+        }
+        return root;
+    }
+};
