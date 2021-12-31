@@ -1,0 +1,28 @@
+code:
+class Solution {
+public:
+    TreeNode* result;
+    bool traverse(TreeNode* node, int pVal, int qVal)
+    {
+        if (node == nullptr) {
+            return false;
+        }
+        bool leftFlag = traverse(node->left, pVal, qVal); // 左子树中是否包含p或者q
+        bool rightFlag = traverse(node->right, pVal, qVal); // 右子树中是否包含p或者q
+        // 后序遍历
+        // case1：p、q分别在node左、右子树 此时node即为最近公共祖先
+        if (leftFlag && rightFlag) { 
+            result = node;
+        }
+        // case2：node本身为p或者q，另一个包含在node的左或者右子树 此时node即为最近公共祖先
+        if ((node->val == pVal || node->val == qVal) && (leftFlag || rightFlag)) {
+            result = node;
+        }
+        // node为根的子树是否包含p或者q
+        return leftFlag || rightFlag || node->val == pVal || node->val == qVal;
+    } 
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        traverse(root, p->val, q->val);
+        return result;
+    }
+};
