@@ -1,0 +1,27 @@
+code:
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        // 计算左子树高度
+        int letfLevel = 1;
+        TreeNode *leftNode= root->left;
+        while(leftNode != nullptr) {
+            letfLevel++;
+            leftNode = leftNode->left;
+        }
+        // 计算右子树高度
+        int rightLevel = 1;
+        TreeNode *rightNode= root->right;
+        while(rightNode != nullptr) {
+            rightLevel++;
+            rightNode = rightNode->right;
+        }
+        if (letfLevel == rightLevel) { // 如果左右子树的高度相同，则是一棵满二叉树
+            return pow(2, letfLevel) - 1;
+        }
+        return 1 + countNodes(root->left) + countNodes(root->right);
+    }
+};
