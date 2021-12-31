@@ -1,0 +1,34 @@
+code:
+class NestedIterator {
+public:
+    vector<int> result;
+    int index = 0;
+    void traverse(const NestedInteger &nestedItem)
+    {
+        if (nestedItem.isInteger()) {
+            result.push_back(nestedItem.getInteger());
+            return;
+        }
+        const vector<NestedInteger> list = nestedItem.getList();
+        for (const auto &item : list) {
+            traverse(item);
+        }
+        return;
+    }
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        for (const auto &item : nestedList) {
+            traverse(item);
+        }
+
+    }
+    
+    int next() {
+        int val = result[index];
+        index++;
+        return val;
+    }
+    
+    bool hasNext() {
+        return (index < result.size());
+    }
+};
