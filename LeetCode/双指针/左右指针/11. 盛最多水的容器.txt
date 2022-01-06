@@ -1,0 +1,22 @@
+node:
+左右指针;每次移动数值较小对应的指针
+code:
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int result = 0;
+        int leftIndex = 0;
+        int rightIndex = height.size() - 1;
+        while (leftIndex < rightIndex) {
+            int tempReuslt = (rightIndex - leftIndex) * min(height[leftIndex], height[rightIndex]);
+            result = max(result, tempReuslt);
+            // 移动较小值对应的指针
+            if (height[leftIndex] <= height[rightIndex]) {
+                leftIndex++;
+            } else {
+               rightIndex--; 
+            }
+        }
+        return result;
+    }
+};
