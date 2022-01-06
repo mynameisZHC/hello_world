@@ -1,0 +1,38 @@
+note:
+时间复杂度、空间复杂度 o(n)
+code:
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        vector<int> num(n + 1 ,0);
+        num[1] = 1;
+        num[2] = 2;
+        for (int index = 3; index <= n; index++) {
+            num[index] = num[index - 1] + num[index - 2];
+        }
+        return num[n];
+    }
+};
+
+node:
+时间复杂度 o(n);使用"滚动数组思想"把空间复杂度优化成o(1)
+code:
+class Solution {
+public:
+    int climbStairs(int n) {
+        int p = 0, q = 0, r = 1;
+        for (int i = 1; i <= n; ++i) {
+            p = q; 
+            q = r; 
+            r = p + q;
+        }
+        return r;
+    }
+};
+
