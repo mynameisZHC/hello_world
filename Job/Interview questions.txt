@@ -11,5 +11,8 @@ https://cloud.tencent.com/developer/article/1631792
 链接阶段编译器会去别的目标文件生成的符号表中去寻找本身自己所声明符号对应的定义。
 
 2.https://www.nowcoder.com/discuss/671349?channel=-1&source_id=profile_follow_post_nctrack
-
+(1)简述http请求过程
+HTTP->TCP->IP->MAC---图解网络 2
 3.https://www.nowcoder.com/discuss/672750?channel=-1&source_id=profile_follow_post_nctrack
+(1)tcp如何实现可靠性传输
+TCP是通过序列号、确认应答、重发控制、连接管理以及窗口控制等机制实现可靠性传输---图解网络 5
