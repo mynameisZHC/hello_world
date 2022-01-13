@@ -21,3 +21,7 @@ TCP是通过序列号、确认应答、重发控制、连接管理以及窗口�
 TCP、UDP粘包、分包
 https://blog.csdn.net/cherish_2012/article/details/41681853
 https://segmentfault.com/a/1190000039691657
+
+
+Linux进程地址空间与进程内存布局详解
+https://zhuanlan.zhihu.com/p/348171413
