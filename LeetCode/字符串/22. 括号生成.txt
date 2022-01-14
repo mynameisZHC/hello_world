@@ -1,0 +1,85 @@
+code:每个字符串判断合法性
+class Solution {
+public:
+    vector<string> result;
+    bool IsThesisValid(string str)
+    {
+        stack<char> stackMem;
+        bool flag = true;
+        for (int index = 0; index < str.size(); index++) {
+            if (str[index] == '(') {
+                stackMem.push('(');
+                continue;
+            }
+            if (stackMem.empty()) {
+                flag = false;
+                break;
+            }
+            stackMem.pop();
+        }
+        if (!stackMem.empty()) {
+            return false;
+        }
+        return flag;
+    }
+
+    void traver (string str, int leftNum, int rightNum) // leftNum、rightNum代表剩余可用的左、右括号数目
+    {
+        // 没有剩余可用的括号且字符串合法
+        if (leftNum == 0 && rightNum == 0 && IsThesisValid(str)) {
+            result.push_back(str);
+            return;
+        }
+
+        if (leftNum != 0) {
+            str += '(';
+            traver(str, --leftNum, rightNum);
+            str.pop_back();
+            ++leftNum;
+        }
+        if (rightNum != 0) {
+            str += ')';
+            traver(str, leftNum, --rightNum);
+            str.pop_back();
+            ++rightNum;
+        }
+}
+
+    vector<string> generateParenthesis(int n) {
+        string str = "";
+        traver(str, n, n);
+        return result;
+    }
+};
+
+code：只要保证左括号数量在合法范围内，且右括号使用数量不比左括号多，按下满这种写法就能保证其括号的合法性
+class Solution {
+public:
+    vector<string> result;
+    void traver (string str, int leftNum, int rightNum)
+    {
+        if (leftNum == 0 && rightNum == 0) {
+            result.push_back(str);
+            return;
+        }
+
+        if (leftNum != 0) {
+            str += '(';
+            traver(str, --leftNum, rightNum);
+            str.pop_back();
+            ++leftNum;
+        }
+        if (rightNum > leftNum) { // 使用右括号的条件是已使用的左括号数量比已使用的右括号数量的情况下才行
+            str += ')';
+            traver(str, leftNum, --rightNum);
+            str.pop_back();
+            ++rightNum;
+        }
+    }
+
+    vector<string> generateParenthesis(int n) {
+        string str = "";
+        traver(str, n, n);
+        return result;
+    }
+};
