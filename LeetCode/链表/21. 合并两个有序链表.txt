@@ -1,0 +1,24 @@
+node:
+1.链表题常用技巧：申请一个虚拟头结点head，最终真实头节点是head->next;
+2.链表题常用技巧：申请一个指针 tail 来记录下一个插入位置的"前一个"位置
+
+code:
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
+        ListNode *head = new ListNode(0);
+        ListNode *tail = head;
+        while (list1 != nullptr && list2 != nullptr) {
+            if (list1->val < list2->val) {
+                tail->next = list1;
+                list1 = list1->next;
+            } else {
+                tail->next = list2;
+                list2 = list2->next;
+            }
+            tail = tail->next;
+        }
+        tail->next = (list1 == nullptr) ? list2 : list1;
+        return head->next;
+    }
+};
