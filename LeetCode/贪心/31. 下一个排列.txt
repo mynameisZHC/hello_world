@@ -1,0 +1,29 @@
+code:
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        int targetIndex = 0;
+        bool reversFlag = true;
+        // 从右往左找到第一个nums[index - 1] <  nums[index]的位置作为目标交换位置
+        for (int index = nums.size() - 1; index > 0; index--) { 
+            if (nums[index - 1] < nums[index]) {
+                targetIndex = index - 1;
+                reversFlag = false;
+                break;
+            }
+        }
+        if (reversFlag) { // 本身是降序 用sort重排成升序
+            sort(nums.begin(), nums.end());
+        } else {
+            // 第二遍扫描找到第一个比targetindex对应值大的下标进行交换
+            for (int idx = nums.size() - 1; idx > targetIndex; idx--) {
+                if (nums[targetIndex] < nums[idx]) { 
+                    swap(nums[targetIndex], nums[idx]);
+                    break;
+                }
+            }
+            // 排序[targetIndex + 1,end]区间
+            sort(nums.begin() + targetIndex + 1, nums.end());
+        }
+    }
+};
