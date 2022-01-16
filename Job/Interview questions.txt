@@ -30,3 +30,7 @@ https://zhuanlan.zhihu.com/p/348171413
 僵尸& 孤儿进程
 https://www.cnblogs.com/Anker/p/3271773.html
 https://blog.csdn.net/qq_41880190/article/details/84197233
+
+linux time_wait netstat -a
+https://blog.csdn.net/zhangjunli/article/details/89321202
+https://www.cnblogs.com/williamjie/p/10275714.html
