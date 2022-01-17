@@ -34,3 +34,7 @@ https://blog.csdn.net/qq_41880190/article/details/84197233
 linux time_wait netstat -a
 https://blog.csdn.net/zhangjunli/article/details/89321202
 https://www.cnblogs.com/williamjie/p/10275714.html
+
+TCP长连接、短连接
+https://cloud.tencent.com/developer/article/1647317
+https://blog.csdn.net/whatday/article/details/92830021
