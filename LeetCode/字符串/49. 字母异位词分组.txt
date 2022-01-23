@@ -1,0 +1,34 @@
+code:
+class Solution {
+public:
+    map<multiset<char>, vector<string>> mapInfo; // multiset<char>作为map的key可以 作为unordered_map不行
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        for (auto str : strs) {
+            multiset<char> tempSet(str.begin(), str.end()); // 用string迭代器初始化multiset
+            mapInfo[tempSet].push_back(str);
+        }
+        vector<vector<string>> result;
+        for (auto iter = mapInfo.begin(); iter != mapInfo.end(); ++iter) {
+            result.push_back(iter->second);
+        }
+        return result;
+    }
+};
+
+code：
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> hashMap;
+        for (const auto &str :strs) {
+            string keyStr = str;
+            sort(keyStr.begin(), keyStr.end());
+            hashMap[keyStr].emplace_back(str); // 排序后的str作为key
+        }
+        vector<vector<string>> result;
+        for (auto iter = hashMap.begin(); iter != hashMap.end(); iter++) {
+            result.emplace_back(iter->second);
+        }
+        return result;
+    }
+};
