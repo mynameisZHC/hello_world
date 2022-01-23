@@ -1,0 +1,36 @@
+note:
+1.旋转、翻转这种问题重点是找规律
+
+code:使用了额外空间原始解法
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        const int size = matrix.size();
+        vector<vector<int>> tempMatrix(size,vector<int>(size,0));
+        for (int col = 0; col < size;col++) {
+            vector<int> colVec;
+            for (int row = size - 1; row >= 0;row--) {
+                colVec.push_back(matrix[row][col]);
+            }
+            tempMatrix[col]  = colVec;
+        }
+        matrix = tempMatrix;
+    }
+};
+
+code:寻找规律 原地旋转
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        for (int i = 0; i < n / 2; ++i) {
+            for (int j = 0; j < (n + 1) / 2; ++j) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[n - j - 1][i];
+                matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1];
+                matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1];
+                matrix[j][n - i - 1] = temp;
+            }
+        }
+    }
+};
