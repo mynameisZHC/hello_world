@@ -1,0 +1,16 @@
+code:
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int rightestIndex = nums[0];
+        for (int index = 0; index < nums.size(); index++) {
+            if (index <= rightestIndex) {
+                rightestIndex = max(rightestIndex, index+nums[index]);
+                if (rightestIndex >= nums.size() - 1) {
+                    return true;
+                }       
+            }
+        }
+        return false;
+    }
+};
