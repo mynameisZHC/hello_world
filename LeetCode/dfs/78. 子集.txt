@@ -1,0 +1,24 @@
+code:
+class Solution {
+public:
+    vector<vector<int>> result;
+    void traverse(const vector<int> &nums, int startIndex, vector<int>path)
+    {
+        if (startIndex == nums.size()) {
+            return;
+        }
+
+        for (int index = startIndex; index < nums.size();index++) {
+            path.emplace_back(nums[index]);
+            result.emplace_back(path);
+            traverse(nums, index + 1, path);
+            path.pop_back();
+        }
+    }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<int> path;
+        result.emplace_back(path);
+        traverse(nums, 0, path);
+        return result;
+    }
+};
