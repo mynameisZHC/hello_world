@@ -1,0 +1,36 @@
+code:bunble sort
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        for (int lastIndex = nums.size() - 1; lastIndex > 0; lastIndex--) {
+            for (int index = 0; index < lastIndex;index++) {
+                if (nums[index] > nums[index + 1]) {
+                    swap(nums[index], nums[index + 1]);
+                }
+            }
+        }
+        return;
+    }
+};
+
+code:tow ptr
+class Solution {
+public:
+    void sortColors(vector<int>& nums) {
+        int n = nums.size();
+        int p0 = 0, p1 = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] == 1) {
+                swap(nums[i], nums[p1]);
+                ++p1;
+            } else if (nums[i] == 0) {
+                swap(nums[i], nums[p0]);
+                if (p0 < p1) {
+                    swap(nums[i], nums[p1]);
+                }
+                ++p0;
+                ++p1;
+            }
+        }
+    }
+};
