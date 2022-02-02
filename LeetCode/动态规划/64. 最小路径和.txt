@@ -1,0 +1,66 @@
+code:逆向带记忆矩阵的dfs
+class Solution {
+public:
+    map<pair<int, int>, int> posToMinVal;
+    int dfs(const vector<vector<int>>& grid, pair<int, int> pos)
+    {
+        auto iter = posToMinVal.find(pos);
+        if (iter != posToMinVal.end()) {
+            return iter->second;
+        }
+
+        if (pos.first == grid.size() - 1&& pos.second == grid[0].size() - 1) {
+            posToMinVal[{pos.first,pos.second}] = grid.back().back();
+            return grid.back().back();
+        }
+
+        int rowDir[2] = {1,0};
+        int colDir[2] = {0,1};
+        int curVal = grid[pos.first][pos.second];
+        int sum[2] = {curVal,curVal};
+        for (int dir = 0; dir < 2; dir++) {
+            pair<int, int> nextPos = {pos.first + rowDir[dir], pos.second + colDir[dir]};
+            if (nextPos.first < 0 || nextPos.first >= grid.size() || nextPos.second < 0 || nextPos.second >= grid[0].size()) {
+                sum[dir] = INT_MAX;
+                continue;
+            }
+            sum[dir] +=dfs(grid, nextPos);
+        }
+        int minSum = sum[0] < sum[1] ? sum[0] : sum[1];
+        posToMinVal[pos] = minSum;
+        return minSum;
+    }
+    int minPathSum(vector<vector<int>>& grid) {
+        int rowSize = grid.size();
+        int colSize = grid[0].size();
+        for (int rowIndex = rowSize -1; rowIndex >= 0; rowIndex--) {
+            for (int colIndex = colSize - 1; colIndex >= 0; colIndex--) {
+                dfs(grid, {rowIndex, colIndex});
+            }
+        }
+        return posToMinVal[{0,0}];
+    }
+};
+
+code：dp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        const int rowSize = grid.size();
+        const int colSize = grid[0].size();
+        vector<vector<int>> dp(rowSize, vector<int>(colSize,0));
+        dp[0][0] = grid[0][0];
+        for (int col = 1; col < colSize; col++) {
+            dp[0][col] = dp[0][col-1] + grid[0][col];
+        }
+        for(int row = 1; row < rowSize; row++) {
+            dp[row][0] = dp[row - 1][0] + grid[row][0];
+        }
+        for (int row = 1; row < rowSize; row++) {
+            for (int col = 1; col < colSize; col++) {
+                dp[row][col] = min(dp[row - 1][col], dp[row][col - 1]) + grid[row][col];
+            }
+        }
+        return dp.back().back();
+    }
+};
