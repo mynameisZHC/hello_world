@@ -1,0 +1,49 @@
+code:largestRectangleArea函数出资LeetCode 84. 柱状图中最大的矩形中
+class Solution {
+public:
+	int largestRectangleArea(vector<int> heights) {
+		int size = heights.size();
+		if (size == 0) {
+			return 0;
+		}
+		if (size == 1) {
+			return heights[0];
+		}
+		stack<int> s;
+		int ans = 0;
+		// 添加哨兵
+		heights.insert(heights.begin(), 0);
+		heights.push_back(0);
+		for (int i = 0; i < heights.size(); i++)
+		{
+			while (!s.empty() && heights[i] < heights[s.top()])
+			{
+				int cur = s.top();
+				s.pop();
+				int left = s.top(); // 左边界为堆栈中新的站顶元素
+				int right = i - 1; // 由于单调栈的缘故 所以右边界为i - 1，因为heights[i] < heights[s.top()]
+				int len = (right - left);
+				int tempMax = len * heights[cur];
+				ans = max(ans, tempMax);
+			}
+			s.push(i);
+		}
+		return ans;
+	}
+	int maximalRectangle(vector<vector<char>>& matrix) {
+		vector<int> heights(matrix[0].size(), 0);
+		int ans = 0;
+		for (int row = 0; row < matrix.size(); row++) {
+			for (int col = 0; col < matrix[0].size(); col++) {
+				int tempRow = row;
+				heights[col] = 0;
+				while (tempRow >= 0 && matrix[tempRow][col] == '1') {
+					heights[col]++;
+					tempRow--;
+				}
+			}
+			ans = max(ans, largestRectangleArea(heights));
+		}
+		return ans;
+	}
+};
