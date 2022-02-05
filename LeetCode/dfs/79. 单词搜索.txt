@@ -1,0 +1,97 @@
+note:
+1.使用合适的数据结构和方法去存储visit会有不同的效果；还有大的数据结构体尽量都用引用来传参
+
+code:使用set<pair<int, int>>就会设计inser、erase、find操作耗时，会超出时间限制
+class Solution {
+public:
+    bool dfs(const string word, const vector<vector<char>>& board, pair<int, int> pos,string str, set<pair<int, int>> &path)
+    {
+        if (str == word) {
+            return true;
+        }
+        string tempStr = word.substr(0, str.size());
+        if (tempStr != str) {
+            return false;
+        }
+        int rowDir[4] = {-1,1,0,0};
+        int colDir[4] = {0,0,-1,1};
+        path.insert(pos);
+        for (int dir = 0; dir < 4;dir++) {
+            pair<int,int> nextPos = {pos.first + rowDir[dir], pos.second + colDir[dir]};
+            auto iter = path.find(nextPos);
+            if (nextPos.first < 0 || nextPos.second < 0 || nextPos.first == board.size() || nextPos.second == board[0].size() || iter != path.end()) {
+                continue;
+            }
+            str += board[nextPos.first][nextPos.second];
+            if (dfs(word, board, nextPos, str, path)) {
+                return true;
+            }
+            str.pop_back();
+        }
+        path.erase(pos);
+        return false;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        char firstCH = word[0];
+        string str;
+        str.push_back(firstCH);
+        set<pair<int, int>>path;
+        for (int rowIndex = 0; rowIndex < board.size(); rowIndex++) {
+            for (int colIndex = 0; colIndex < board[0].size(); colIndex++) {
+                if (board[rowIndex][colIndex] == firstCH) {
+                    if (dfs(word, board, {rowIndex, colIndex}, str, path)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
+
+code:使用vector<vector<bool>>只需要用下表赋值和判断
+class Solution {
+public:
+    bool dfs(const string word, const vector<vector<char>>& board, pair<int, int> pos,string str, vector<vector<bool>> &path)
+    {
+        if (str == word) {
+            return true;
+        }
+        string tempStr = word.substr(0, str.size());
+        if (tempStr != str) {
+            return false;
+        }
+        int rowDir[4] = {-1,1,0,0};
+        int colDir[4] = {0,0,-1,1};
+        path[pos.first][pos.second] = true;
+        for (int dir = 0; dir < 4;dir++) {
+            pair<int,int> nextPos = {pos.first + rowDir[dir], pos.second + colDir[dir]};
+            if (nextPos.first < 0 || nextPos.second < 0 || nextPos.first == board.size() || nextPos.second == board[0].size() || path[nextPos.first][nextPos.second] == true) {
+                continue;
+            }
+            str += board[nextPos.first][nextPos.second];
+            if (dfs(word, board, nextPos, str, path)) {
+                return true;
+            }
+            str.pop_back();
+        }
+        path[pos.first][pos.second] = false;
+        return false;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        char firstCH = word[0];
+        string str;
+        str.push_back(firstCH);
+        vector<vector<bool>> path(board.size(),vector<bool>(board[0].size(), false));
+        for (int rowIndex = 0; rowIndex < board.size(); rowIndex++) {
+            for (int colIndex = 0; colIndex < board[0].size(); colIndex++) {
+                if (board[rowIndex][colIndex] == firstCH) {
+                    if (dfs(word, board, {rowIndex, colIndex}, str, path)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
