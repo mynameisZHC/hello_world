@@ -1,0 +1,3 @@
+1.项目的消息分发机制
+https://blog.csdn.net/machuanfei_c/article/details/80922158?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_paycolumn_v3&utm_relevant_index=5
+(1)内部：有一个消息分发器 在这个消息分发器里面会根据不同的组件进行不同消息码的注册(相关的回调函数;收到消息后会根据包头的消息码去分发器里找对应组件的的回调函数 然后到对应组件里面去进行相关操作。
