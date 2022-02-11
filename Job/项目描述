@@ -8,3 +8,7 @@ https://blog.csdn.net/machuanfei_c/article/details/80922158?spm=1001.2101.3001.6
 https://blog.csdn.net/okiwilldoit/article/details/81738782?spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9.pc_relevant_paycolumn_v3&utm_relevant_index=15
 https://xianshang.blog.csdn.net/article/details/88777503?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4.pc_relevant_paycolumn_v3&utm_relevant_index=9
 https://blog.csdn.net/qq_37043780/article/details/82714830
+
+3.性能优化方法
+(1)本地就用valgrind+kcachegrind,通过本地模拟环境的用例来分析自身函数消耗的总指令数、子函数消耗的总指令数、函数调用次数等得到具体的热点函数
+(2)基站环境上就用perf抓取特定业务情况下对应进程的特定时长的CPU快照 然后对采样后的数据进行解析(CPU消耗占比 热点函数);也可以用FlameGraph绘制热点函数火焰图
