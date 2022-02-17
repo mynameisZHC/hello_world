@@ -1,0 +1,28 @@
+code:
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.size() == 1) {
+            return 1;
+        }
+        // dp[i]表示以nums[i]作为结尾的子序列的最长递增长度;初始化为1代表至少本身可以作为递增序列长度
+        vector<int> dp(nums.size(), 1);
+        // base case
+        dp[0] = 1;
+        for (int i = 1; i < nums.size(); i++) {
+            // dp[i]的解法是寻找0~i-1满足nums[i] > nums[j]条件的最大dp[j] 然后+1即可
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        
+        // 求dp数组中最大值 即最长递增子序列长度
+        int result = 0;
+        for (auto len : dp) {
+            result = max(result, len);
+        }
+        return result;
+    }
+};
