@@ -1,0 +1,27 @@
+code:
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        const int size = matrix.size();
+        if (size == 1) {
+            return matrix[0][0];
+        }
+        vector<vector<int>> dp(size, vector<int>(size, 0));
+        // base case: row 0
+        for (int col = 0; col < size; col++) {
+            dp[0][col] = matrix[0][col];
+        }
+        int minVal = INT_MAX;
+        for (int row = 1; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                int upLeftVal = col > 0 ? dp[row-1][col-1] : INT_MAX;
+                int upRightVal = col < size - 1 ? dp[row-1][col+1] : INT_MAX;
+                dp[row][col] = matrix[row][col] + min(min(upLeftVal, upRightVal), dp[row-1][col]);
+                if (row == size - 1) {
+                    minVal = min(minVal, dp[row][col]);
+                }
+            }
+        }
+        return minVal;
+    }
+};
