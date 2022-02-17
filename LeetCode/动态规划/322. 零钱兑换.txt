@@ -1,0 +1,20 @@
+code:
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        sort(coins.begin(), coins.end());
+        // dp[i]表示要凑成金额i所需要的最少硬币个数
+        vector<int> dp(amount + 1, amount + 1);
+        // base case
+        dp[0] = 0;
+        for (int amountNum = 1; amountNum <= amount; amountNum++) {
+            for (auto coinNum : coins) {
+                if (coinNum > amountNum) {
+                    break;
+                }
+                dp[amountNum] = min(dp[amountNum], dp[amountNum - coinNum] + 1);
+            }
+        }
+        return (dp[amount] == amount + 1) ? -1 :  dp[amount];
+    }
+};
