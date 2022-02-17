@@ -1,0 +1,34 @@
+code:
+class Solution {
+public:
+    int result;
+    void BackTrack(const vector<int>& nums, int index, int sum, int target)
+    {
+        int diff = target - sum;
+        int maxVal = accumulate(nums.begin() + index, nums.end(),0);
+        // 剪枝优化
+        if (abs(diff) > maxVal) {
+            return;
+        }
+        if (index == nums.size()) {
+            if (sum == target) {
+                result++;
+            }
+            return;
+        }
+        // + 
+        sum += nums[index];
+        BackTrack(nums, index+1, sum, target);
+        sum -= nums[index];
+
+        // - 
+        sum -= nums[index];
+        BackTrack(nums, index+1, sum, target);
+        sum += nums[index];
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        result = 0;
+        BackTrack(nums, 0, 0, target);
+        return result;
+    }
+};
