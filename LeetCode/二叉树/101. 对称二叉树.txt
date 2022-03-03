@@ -1,0 +1,54 @@
+node:如果用原来自己的方法(递归 字符串序列化)需要递归遍历所有节点;而如果用递归加每次节点值比较,则遇到不等情况可以提前退出,一定程度上达到剪枝的效果
+
+code:递归 字符串序列化
+class Solution {
+public:
+    string LeftDfs(TreeNode* root)
+    {
+        if (root == nullptr) {
+            return "*#";
+        }
+        string str;
+        str += LeftDfs(root->left)+"#";
+        str += to_string(root->val)+"#";
+        str += LeftDfs(root->right)+"#";
+        return str;
+    }
+    string RightDfs(TreeNode* root)
+    {
+        if (root == nullptr) {
+            return "*#";
+        }
+        string str;
+        str += RightDfs(root->right)+"#";
+        str += to_string(root->val)+"#";
+        str += RightDfs(root->left)+"#";
+        return str;
+    }
+    bool isSymmetric(TreeNode* root) {
+        string leftStr = LeftDfs(root);
+        string rightStr = RightDfs(root);
+        return leftStr == rightStr;
+    }
+};
+
+code:递归 节点值比较
+class Solution {
+public:
+    bool IsEqual(TreeNode* node1, TreeNode* node2)
+    {
+        if (node1 == nullptr && node2 == nullptr) {
+            return true;
+        }
+        if (node1 != nullptr && node2 != nullptr) {
+            bool flag1 = (node1->val == node2->val);
+            bool flag2 = IsEqual(node1->left, node2->right);
+            bool flag3 = IsEqual(node1->right, node2->left);
+            return (flag1 && flag2 && flag3);
+        }
+        return false;
+    }
+    bool isSymmetric(TreeNode* root) {
+        return IsEqual(root, root);
+    }
+};
