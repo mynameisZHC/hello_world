@@ -1,0 +1,27 @@
+code:排序 查找
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        if (nums.size() == 1) {
+            return nums[0];
+        }
+        sort(nums.begin(), nums.end());
+        for (int index = 0; index < nums.size();) {
+            if (nums[index] != nums[index + 1]) {
+                return nums[index];
+            }
+            index += 2;
+        }
+        return nums.back();
+    }
+};
+
+code:位运算
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int ret = 0;
+        for (auto e: nums) ret ^= e;
+        return ret;
+    }
+};
