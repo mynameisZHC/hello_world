@@ -1,0 +1,51 @@
+code:排序
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        if (nums.empty()) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int maxLen = 0;
+        int tempMaxLen = 0;
+        int consecNum = nums[0] - 1;
+        for (int index = 0; index < nums.size(); index++) {
+            if (nums[index] == consecNum + 1) {
+                tempMaxLen++;
+            } else if (nums[index] == consecNum) {
+                continue;
+            } else {
+                maxLen = max(maxLen, tempMaxLen);
+                tempMaxLen = 1;
+            }
+            consecNum = nums[index];
+        }
+        maxLen = max(maxLen, tempMaxLen);
+        return maxLen;
+    }
+};
+
+code:set
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        set<int> setInfo;
+        for (auto num : nums) {
+            setInfo.insert(num);
+        }
+        int maxLen = 0;
+        int tempMaxLen = 0;
+        int number = *setInfo.begin() - 1;
+        for (auto iter = setInfo.begin(); iter != setInfo.end();iter++) {
+            if (*iter == number + 1) {
+            tempMaxLen++;
+            } else {
+                maxLen = max(maxLen, tempMaxLen);
+                tempMaxLen = 1;
+            }
+            number = *iter;
+        }
+        maxLen = max(maxLen, tempMaxLen);
+    return maxLen;
+    }
+};
