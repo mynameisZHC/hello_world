@@ -1,0 +1,26 @@
+code:
+class Solution {
+public:
+    int result;
+    int dfs(TreeNode* node) 
+    {
+        if (node == nullptr) {
+            return 0;
+        }
+        // 分别计算左右节点的最大路径和的值
+        int leftMaxSum = max(dfs(node->left), 0);
+        int rightMaxSum = max(dfs(node->right), 0);
+        // 计算以此节点作为根节点所能得到的最大路径和
+        int nodeAsRootMaxSum = node->val + leftMaxSum + rightMaxSum;
+        //实时更新最大路径和
+        result = max(result, nodeAsRootMaxSum);
+        // 此节点作为子节点所能贡献的最大路径和;因为此节点只能被访问一次 所以左、右子节点只能选择其中一边
+        int returnMaxSum = node->val + max(leftMaxSum, rightMaxSum);
+        return returnMaxSum;
+    }
+    int maxPathSum(TreeNode* root) {
+        result = -1001;
+        dfs(root);
+        return result;
+    }
+};
