@@ -1,6 +1,22 @@
+muduo
+// muduo github
+https://github.com/shenmingik/muduo
+// linyacool WebServer(模仿muduo)
 https://github.com/linyacool/WebServer
+// 对应 linyacool WebServer解析
 https://blog.csdn.net/adlatereturn/article/details/108502385
+// linyacool blog
 https://blog.csdn.net/linyacool/article/details/84560901
+//muduo库是如何实现跨线程函数调用的
+https://blog.csdn.net/lovebasamessi/article/details/104666853
+//gettid 和 pthread_self 的区别
+https://blog.csdn.net/hp_truth/article/details/42424769
+// muduo源码剖析
+https://zhuanlan.zhihu.com/p/85101271
+// linux eventfd 
+https://jishuin.proginn.com/p/763bfbd5fccb
+https://zhuanlan.zhihu.com/p/40572954
+
 
 epoll
 https://www.cnblogs.com/lojunren/p/3856290.html
@@ -23,6 +39,3 @@ https://www.zhihu.com/question/26943938
 // 进程与线程
 https://juejin.cn/post/6844904113235312647
 
-//muduo
-https://github.com/shenmingik/muduo
-https://raw.githubusercontent.com/mobinsheng/books/master/Linux%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%BC%96%E7%A8%8B%EF%BC%9A%E4%BD%BF%E7%94%A8muduo%20C%2B%2B%E7%BD%91%E7%BB%9C%E5%BA%93.pdf
