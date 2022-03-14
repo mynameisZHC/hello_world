@@ -89,5 +89,22 @@ mmap：用于存放使用 mmap 函数映射的内存区
 .data段：初始化的全局变量和静态变量
 .text段：主要存储程序代码还有一些只读的常熟常量
 
+<7>排序算法复杂度
+           平均       最好      最坏   空间复杂度
+ 冒泡      o(n2)      o(n)      o(n2)     o(1)
+ 归并      o(nlogn)   o(nlogn)  o(nlogn)  o(n)
+ 快排      o(nlogn)   o(nlogn)  o(n2)     o(logn)
+   
+<8>整数、指针、布尔变量、浮点数值如何与0比较大小
+整数： if ( n == 0 )    if ( n != 0 )
+布尔变量：if ( flag )  if ( !flag )
+浮点值：if ((x>=-EPSINON) && (x<=EPSINON))  EPSINON为误差精度 通常为1e-6
+指针：char *p  if (p == NULL) if (p != NULL)
 
+<9>(1)已知进程名，使用命令查看当前进程打开的文件句柄(2)已知进程名，使用命令查看当前进程的网络连接状态(3)已知进程名，查看eth0网卡与ip10.10.10.10:10653之间的TCP数据包
+(1)lsof (list open files)是一个列出当前系统打开文件的工具
+(2)netstat
+(3)tcpdump，用简单的语言概括就是dump the traffic on a network，是一个运行在linux平台可以根据使用者需求对网络上传输的数据包进行捕获的抓包工具
 
+<10>项目相关
+todo
