@@ -62,4 +62,32 @@ struct test
 #pragma pack()/*还原默认对齐*/
 在这样的声明下，任何平台结构体test的大小都为11字节，这样做能够保证跨平台的结构大小一致，同时还节省了空间，但不幸的是，降低了效率。
 
+<3>STL set、map、multimap、multiset;unordered_map、 unordered_set 的异同点
+set
+(1)底层是红黑树
+(2)所得元素的只有key没有value，底层其实就value就等于key
+(3)不允许出现键值重复，调用的是红黑树中的insert_unique
+(4)所有元素会被自动排序
+(5)不能通过迭代器来改变set的值，因为set迭代器是一种constance iterator
+(6)查找的时间复杂度o(logn)
 
+map
+(1)底层是红黑树
+(2)所有元素都是键+值(key+value)
+(3)不允许键值重复,调用的是红黑树中的insert_unique
+(4)所有元素会被自动排序
+(5)map的key不能修改,但对应的value可以修改
+(6)查找的时间复杂度o(logn)
+
+multimap、multiset
+底层和map、set一样，只是插入时调用的是红黑树的insert_eqaul()，所以multimap、multiset允许有重复键值
+
+unordered_map、unordered_set
+(1)底层是哈希表
+(2)具备排序功能
+(3)查找时间复杂度o(1)
+
+map vs unordered_map
+map底层红黑树,增删查的时间复杂度均为o(logn),但空间占用较大，因为要维护父子节点及对应的颜色信息
+unordered_map底层是哈希表,通过hash元素计算元素位置,查询时间复杂度o(1),维护时间跟bucket桶和维护的链表长度有关,建立hash表耗时较大
+从底层和特性看出:map适用于有序数据的应用场景;unordered_map适用于高效查询的场景
