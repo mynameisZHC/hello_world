@@ -64,3 +64,5 @@ domain：AF_INET IPV4 AF_INET6 IPV6
 type：SOCK_STREAM 字节流 TCP；SOCK_DGRAM 数据包 UDP
 protocol：一般写成0
 
+<4>数据库相关
+todo
