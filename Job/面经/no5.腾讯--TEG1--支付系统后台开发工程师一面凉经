@@ -1,0 +1,55 @@
+
+<2>shared_ptr实现原理？什么时候会释放内存？引用计数器什么时候+1？什么时候减1？share_ptr存在什么问题？如何解决的？还有哪些智能指针？
+(1)
+智能指针是一个模板类,里面会有用来存储指向动态分配对象(堆内存)的指针，负责自动释放堆上的内存，防止内存泄露
+shared_ptr内部除了一个指向堆内存的原始指针还会有一个引用计数器(指针)，允许多个智能指针同时指向同一块堆内存，
+每当多一个指向该堆内存的智能指针对象时，其对应的引用计数器+1，每当少一个指向该堆内存的智能指针对象时，其对应的引用计数器-1，当计数为0时会自动释放动态分配的堆内存
+创建类对象时，初始化指针并将引用计数置为1；拷贝指针(拷贝构造函数)增加与之对应的引用计数器；赋值时，减少=左边所指对象引用计数器(如果为9则删除对象)，增加=右边所指对象引用计数；析构函数中减少引用计数(如果减为0则释放堆内存)
+(2)
+share_ptr可能存在环形引用导致计数无法变为0，存在内存泄露
+class father {
+public:
+    father() {
+        cout << "father !" << endl;
+    }
+    ~father() {
+        cout << "~~~~~father !" << endl;
+    }
+    void setSon(shared_ptr<son> s) {
+        son = s;
+    }
+private:
+    shared_ptr<son> son;
+};
+
+class son {
+public:
+    son() {
+        cout << "son !" << endl;
+    }
+    ~son() {
+        cout << "~~~~~~son !" << endl;
+    }
+    void setFather(shared_ptr<father> f) {
+        father = f;
+    }
+private:
+    shared_ptr<father> father;
+};
+解决办法：此时需要使用弱引用weak_ptr，shared_ptr的辅助指针，只引用 不计数
+class father {
+public:
+    father() {
+        cout << "father !" << endl;
+    }
+    ~father() {
+        cout << "~~~~~father !" << endl;
+    }
+    void setSon(shared_ptr<son> s) {
+        son = s;
+    }
+private:
+    //shared_ptr<son> son;
+    weak_ptr<son> son; // 用weak_ptr来替换
+};
+
