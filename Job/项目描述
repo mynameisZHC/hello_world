@@ -3,9 +3,15 @@ https://refactoringguru.cn/design-patterns/composite/cpp/example
 所在的是5G基站产品部门,主要就是做5G协议层的业务需求。平常工作主要围绕2个方面：
 第一个是由通信算法SE驱动的(他们类似于产品经理的角色)根据通信协议和客户的要求会给我们提很多通信相关的功能及性能方面需求。我们根据这些要求会去增、删、改对应的业务处理流程。
 第二个就是从软件层面出发，考虑整体的软件架构，消息流程和编码实现去做迭代优化。
+我们业务模块是一个由消息驱动的系统，主要负责
 DOPRA平台：
-GOF软件框架：
-
+一个通用的软件平台，提供一种消息通信框架，屏蔽了不同硬件或者不同系统底层的通信原理，它将一个应用划分为若干个功能模块（FID），再将每个功能模块划分为若干个功能子模块（PID）。
+业务部门只需要调用它提供的接口 比如vos_send，它会根据比如不同FID可能是不同进程间进行通信(底层可能是用的是共享内存或者消息队列，但我们上层感知不到)
+GOF软件框架：一种编程框架
+提供任务管理(task proc)一种组合设计模式(树状) task表明一个要做的任务，这个任务下面会需要很多环节共同完成 即很多proc，这些proc里面可能还有子proc这种,这些proc可能是串行可能是并行，他们的结果又会对task的结果产生影响。
+提供通用底层的一些模板类和方法，我们只需要实现类似于startfunc、onmsg这种公共方法。task本身会有个任务队列。
+提供一种事件订阅和发布机制，比如在开始的时候你订阅一个时间(eventid)并注册对应的回调函数，在后面另一个地方发布此事件时候走这个框架就能走到最初注册的这个回调函数中。
+这些通用机制的提供帮助程序员省略了一些结构性的问题，让其更多时间用来思考业务上的东西。
 
 1.项目的消息分发机制
 https://blog.csdn.net/machuanfei_c/article/details/80922158?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_paycolumn_v3&utm_relevant_index=5
