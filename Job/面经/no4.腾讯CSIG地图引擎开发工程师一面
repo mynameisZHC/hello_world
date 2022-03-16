@@ -27,7 +27,12 @@ TCP可靠的原因：序列号和确认应答、重传机制(超时重传和快�
 对服务端而言，发送了「SYN,ACK」包，在超时时间内没有收到客户端发来的「ACK」包，会触发超时重传，新发送「SYN,ACK」包。
 而这个「SYN,ACK」包的重传次数，不同的操作系统下有不同的配置，例如在 Linux 下可以通过tcp_synack_retries进行配置，默认值为 5。
 如果超过重试次数内，仍未收到「ACK」应答包，那么服务端会自动关闭这个连接。
-客户端故意不发的情况属于SYN FLOOD攻击，解决办法：图解网络4
+客户端故意不发的情况属于SYN FLOOD攻击
+解决办法：修改linux内核参数，控制队列大小和当队列满时应该做的处理动作
+SYN_RCVD状态连接的最大个数
+net.ipv4.tcp_max_syn_backlog
+超出处理能力时直接回复RST，丢弃连接
+net.ipv4.tcp_abort_on_overflow
 
 TCP三次握手、四次挥手出现意外情况时是如何处理的:https://segmentfault.com/a/1190000021740112
 
