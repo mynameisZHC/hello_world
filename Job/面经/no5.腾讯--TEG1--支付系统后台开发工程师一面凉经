@@ -1,3 +1,10 @@
+https://www.nowcoder.com/discuss/671349?channel=-1&source_id=profile_follow_post_nctrack
+<1>c++11了解吗？说说说都有哪些特性?
+nullptr替代NULL
+引入auto自动推导
+范围for循环 for(auto num:nums)
+类和结构体的初始化列表
+lambda表达式
 
 <2>shared_ptr实现原理？什么时候会释放内存？引用计数器什么时候+1？什么时候减1？share_ptr存在什么问题？如何解决的？还有哪些智能指针？
 (1)
