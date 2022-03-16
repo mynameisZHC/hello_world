@@ -36,6 +36,10 @@ net.ipv4.tcp_abort_on_overflow
 
 TCP三次握手、四次挥手出现意外情况时是如何处理的:https://segmentfault.com/a/1190000021740112
 
-<5>客户端第四次挥手后进入什么状态、为什么要做这个等待、等待多长时间
-进入TIME-WAIT状态，因为服务端可能会没收到第四次挥手，重发三次挥手请求，所以要等2MSL
-
+<5>客户端第四次挥手后进入什么状态、为什么要做这个等待、等待多长时间;扩展:如果服务端timewait状态过多有什么危害，什么解决
+进入TIME-WAIT状态
+保证连接正确关闭：等待足够的时间以确保最后的ACK能被动关闭方接收，因为被动关闭方可没收到第四次挥手，会超时重发第三次挥手请求，
+所以要等2MSL MSL报文最大生存时间 linux系统里面MSL是30s 2MSL就是60s 所以linux系统停留在time_wait时间固定在60s
+服务端timewait状态过多会占用过多的本地端口资源，造成困难无法创建新的TCP连接
+解决办法：setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)) 
+SO_REUSEADDR用于对TCP套接字处于TIME_WAIT状态下的socket，可以重复绑定使用。server程序总是应该在调用bind()之前设置SO_REUSEADDR套接字选项
