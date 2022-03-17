@@ -79,4 +79,4 @@ cwnd 变为 1
 TCP认为这种情况不严重 因为大部分包没丢 只丢了一小部分
 ssthresh = cwnd
 cwnd = cwnd / 2
-
+快速恢复
