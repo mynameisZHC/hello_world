@@ -17,3 +17,29 @@ Memcheck是valgrind应用最广泛的工具，一个重量级的内存检查器�
 崩溃：
 在我们的业务中其实一般就是板子重启,会有黑匣子日志记录异常时刻日志运行信息，一般都通过函数调用栈信息进行排查，排查可能的内存越界问题
 (5)程序内存一直升高怎么排查
+
+3.西门子-1面-2022.03.17
+(1)画软件架构图
+(2)进程和线程间通信方法
+(3)设计模式 单例怎么实现
+单例类：
+私有化它的构造函数，以防止外界创建单例类对象
+使用类的私有静态变量作为类的唯一实例
+提供一个公共的静态方法获取此实例
+饿汗版：指单例实例在程序运行时被立即执行初始化
+懒汉版：单例实例在第一次被使用时才进行初始化，这叫做延迟初始化
+class Singleton {
+public:
+  static Singleton& GetInstance() {
+    static Singleton intance;
+    return intance;
+  }
+  ~Singleton() = default;
+private:
+  Singleton() = default;
+  Singleton(const Singleton&) = delete;
+  Singleton& operator=(const Singleton&) = delete;
+};
+C++11后线程安全
+(4)new的底层怎么实现
+new的实现过程：首先调用operator new的标准库函数，分配足够大的内存；接下来运行该类型的一个构造函数初始化构造对象；最后返回分配好且构造好的对象指针
