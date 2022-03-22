@@ -61,7 +61,8 @@ new的实现过程：首先调用operator new的标准库函数，分配足够�
 (14)观察者模式
 (15)内核调度
 (16)i++和++i类中实现的区别
-(17)new arr[1] 和new arr区别 
+(17)shared_ptr 用new和make_shared的区别
+(18)new arr[1] 和new arr区别 
 string *str = new string[10];   分配了保存对象的内存空间之后，将调用 string 类型的默认构造函数依次初始化数组中每个元素
 delete [] str; 对10个string 对象分别调用析构函数，然后再释放掉为对象分配的所有内存空间
 这就有一个问题：我们如何知道str指向对象的数组大小？怎么知道调用几次析构函数？
