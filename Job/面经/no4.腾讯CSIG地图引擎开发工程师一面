@@ -1,6 +1,8 @@
 https://www.nowcoder.com/discuss/665936?channel=-1&source_id=profile_follow_post_nctrack
 <1>Vector相关：resize、reverse方法;迭代器什么情况下会失效
-reserve(n)预先分配一个大小为n的大空间。resize只改变元素的数目，不改变vector的容量。
+reserve(n)是为容器预先分配一个大小为n的空间,预留空间并不真正创建元素对象，所以这些内存空间可能还是“野”的。如果使用[]操作符进行访问，可能出现数组越界问题，要用push_back、insert
+resize会改变容器中元素的数目;resize到一个大空间时，会真正的创建元素对象即调用元素的默认构造函数和扩容,resize到一个小空间会调用默认析构函数但不会缩小容量
+
 序列容器(vector)
 该数据结构的元素是分配在连续的内存中，insert和erase操作，都会使得删除点和插入点之后的元素挪位置，所以，插入点和删除掉之后的迭代器全部失效，也就是说insert(iter)(或erase(iter))，然后在iter++，是没有意义的
 解决方法：erase(iter)的返回值是下一个有效迭代器的值。 iter =vec.erase(iter)
