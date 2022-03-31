@@ -38,7 +38,7 @@ void QuickSort(int *arr, int left, int right)
 }
 
 冒泡排序
-最好时间复杂度 o(n)本身已经排序好 几个是否swap过的标志位 如果没交换过外层直接返回 所以最好为o(n) 
+最好时间复杂度 o(n)本身已经排序好 记个是否swap过的标志位 如果没交换过外层直接返回 所以最好为o(n) 
 最坏时间复杂度o(n2)数组本身为逆序 平均o(n2)
 void BunbleSort(int *arr, int n)
 {
