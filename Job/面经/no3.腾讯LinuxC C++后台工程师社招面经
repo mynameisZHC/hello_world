@@ -11,7 +11,7 @@ https://www.nowcoder.com/discuss/576578?channel=-1&source_id=profile_follow_post
 存储内容    0x78       0x56      0x34       0x12
 大端：
 内存地址  0x804900   0x80490   0x804902   0x804903
-存储内容    0x12       0x56      0x34       0x12
+存储内容    0x12       0x34      0x56       0x78
 使用代码判断大端序还是小端序
 int a = 0x1234;
 char b = (char)a;
@@ -84,7 +84,7 @@ multimap、multiset
 
 unordered_map、unordered_set
 (1)底层是哈希表
-(2)具备排序功能
+(2)不具备排序功能
 (3)查找时间复杂度o(1)
 
 map vs unordered_map
