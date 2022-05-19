@@ -1,1 +1,5 @@
 ●coredump
+工作中：在我们的基站业务中coredump一般会引起对应的单板重启,会有黑匣子日志记录异常时刻日志运行信息，可以通过函数调用栈信息进行排查，排查可能的内存越界、野指针使用问题
+业界：gdb调试coredump https://blog.csdn.net/u014403008/article/details/54174109
+
+●内存泄露
