@@ -4,3 +4,4 @@
 https://blog.csdn.net/u014403008/article/details/54174109
 
 ●内存泄露
+valgrind内存泄漏检测快速上手：https://www.jianshu.com/p/e19aa43ddf9c 
