@@ -1,5 +1,6 @@
 ●coredump
 工作中：在我们的基站业务中coredump一般会引起对应的单板重启,会有黑匣子日志记录异常时刻日志运行信息，可以通过函数调用栈信息进行排查，排查可能的内存越界、野指针使用问题
-业界：gdb调试coredump https://blog.csdn.net/u014403008/article/details/54174109
+业界：对于coredump的例子 需要生成core文件(用ulimit -c 去修改默认core文件大小为0 的限制 使能生成core文件)  然后用gdb带执行文件和core文件去调试 最主要是用bt查看调用栈 辅之以p 打印比如指针值这种
+https://blog.csdn.net/u014403008/article/details/54174109
 
 ●内存泄露
