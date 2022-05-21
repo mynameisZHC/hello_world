@@ -1,0 +1,17 @@
+https://www.nowcoder.com/discuss/400845?channel=-1&source_id=profile_follow_post_nctrack
+●new 跟 malloc的差别
+
+●TCP的三次握手，并说说三次握手做了什么事情，每次通讯包发了什么
+
+●TCP与UDP的差异，优缺点
+
+●epoll，select实现的功能，聊一聊多路复用的理解
+
+●一个函数在堆栈中是如何放置的，static变量，全局变量是放置在哪里
+
+●是否了解红黑树
+
+●是否了解数据结构的堆
+
+●如何用GDB进行内存泄漏调试
+gdb:call malloc_stats()  在函数运行前和运行后分别调用 然后可以对比使用内存的大小
