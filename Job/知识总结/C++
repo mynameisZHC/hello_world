@@ -267,3 +267,10 @@ int x, y; 交换x、y的值
 x = x +y;
 y = x - y; // 这步让y = x
 x = x - y; // 这步让x = y
+
+<19>一个空类会默认添加哪些函数
+empty(); // 默认构造
+~empty(); // 默认析构
+empty(const empty&) // 拷贝构造
+empty& operate=(const empty&) // 拷贝赋值 
+
