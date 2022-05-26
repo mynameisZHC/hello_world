@@ -310,3 +310,6 @@ std::shared_ptr<A> pa(a);
 std::shared_ptr<A> pa1 = std::make_shared<A>(1);   //②
 std::make_shared申请一个单独的内存块来同时存放At对象和控制块
 这个优化减少了程序的静态大小，因为代码只包含一次内存分配的调用，并且这会加快代码的执行速度，因为内存只分配了一次
+
+shared_from_this
+https://blog.csdn.net/qq_42500831/article/details/124712080
