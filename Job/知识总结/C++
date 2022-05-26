@@ -274,3 +274,8 @@ empty(); // 默认构造
 empty(const empty&) // 拷贝构造
 empty& operate=(const empty&) // 拷贝赋值 
 
+<20>智能指针
+
+
+
+
