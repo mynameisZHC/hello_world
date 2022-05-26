@@ -275,7 +275,38 @@ empty(const empty&) // 拷贝构造
 empty& operate=(const empty&) // 拷贝赋值 
 
 <20>智能指针
+.智能指针有一个通用的规则，就是->表示用于调用指针原有的方法，而.则表示调用智能指针本身的方法
 
+.unique_ptr
+unique_ptr的核心特点就如它的名字一样，它拥有对持有对象的唯一所有权。即两个unique_ptr不能同时指向同一个对象
+std::unique_ptr<A> a1(new A());
+std::unique_ptr<A> a2 = a1;//编译报错，不允许复制  ：unique_ptr不能被复制到另外一个unique_ptr
+std::unique_ptr<A> a3 = std::move(a1);//可以转移所有权，所有权转义后a1不再拥有任何指针 ： nique_ptr所持有的对象只能通过转移语义将所有权转移到另外一个unique_ptr
 
+.shared_ptr
+shared_ptr强调的是共享所有权，也就是说多个shared_ptr可以拥有同一个原生指针的所有权，可以都指向同一个原生堆内存
+std::shared_ptr<A> a1(new A());
+std::shared_ptr<A> a2 = a1;//编译正常，允许所有权的共享
+long a1_use_count = a1.use_count();//引用计数数量
 
+.weak_ptr
+weak_ptr 比较特殊，它主要是为了配合shared_ptr而存在的。就像它的名字一样，它本身是一个弱指针，因为它本身是不能直接调用原生指针的方法的。如果想要使用原生指针的方法，需要将其先转换为一个shared_ptr
+weak_ptr不会增加引用计数，因此将循环引用的一方修改为弱引用，可以避免内存泄露
+std::shared_ptr<A> a1(new A());
+std::weak_ptr<A> weak_a1 = a1;//不增加引用计数
+如果一块内存被shared_ptr和weak_ptr同时引用 当所有shared_ptr析构之后 不管还有没有weak_ptr引用改内存，内存会被释放
 
+.智能指针如何选择
+unique_ptr独占对象的所有权，由于没有引用计数，因此性能较好
+shared_ptr共享对象的所有权，但性能略差
+weak_ptr配合shared_ptr，解决循环引用的问题
+由于性能问题，那么可以粗暴的理解：优先使用unique_ptr。但由于unique_ptr不能进行复制，因此部分场景下就只能用shared_ptr
+https://aijishu.com/a/1060000000286819
+
+.new和make_shared 
+A* a = new A;  
+std::shared_ptr<A> pa(a);
+先在堆上分配一块内存，然后在堆上再建一个智能指针控制块，这两个东西是不连续的，智能指针块内存再指向a的内存。因此直接使用new，需要一块内存分配给a，还要一块内存分配给控制块。
+std::shared_ptr<A> pa1 = std::make_shared<A>(1);   //②
+std::make_shared申请一个单独的内存块来同时存放At对象和控制块
+这个优化减少了程序的静态大小，因为代码只包含一次内存分配的调用，并且这会加快代码的执行速度，因为内存只分配了一次
