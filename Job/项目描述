@@ -26,7 +26,6 @@ https://blog.csdn.net/machuanfei_c/article/details/80922158?spm=1001.2101.3001.6
 (1)内部：有一个消息分发器 在这个消息分发器里面会根据不同的组件进行不同消息码的注册(相关的回调函数;收到消息后会根据包头的消息码去分发器里找对应组件的的回调函数 然后到对应组件里面去进行相关操作。
 
 
-
 2.负载均衡算法
 https://blog.csdn.net/okiwilldoit/article/details/81738782?spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9.pc_relevant_paycolumn_v3&utm_relevant_index=15
 https://xianshang.blog.csdn.net/article/details/88777503?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4.pc_relevant_paycolumn_v3&utm_relevant_index=9
@@ -58,6 +57,14 @@ caps指标主要跟cpu的忙时利用率相关,比如同一个业务模型，每
 
 (2)"使得此模块代码规模减少20%,性能提升15%"
 代码规模:将流程中相似的流程、模块使用模板函数或者模板类进行公共部分提取;将一些switch case场景用hash表或者表驱动进行优化
+比如之前有个消息处理模块，它的职责就是接受另一个模块发过来的各种消息，然后不同消息使用不同结构体进行注册，处理流程都是非常相似的注册流程
+所以可以抽取一个公共的模板函数对公共注册流程流程进行处理，只是注册的时候用各自消息和结构体进行实例化即可
+void funca(msgtypea, structa)
+void funcb(msgtypeb, structb)
+void funcc(msgtypec, structc)
+这些处理非常相似 提炼成一个模板函数
+template<msgtypeEnum msg, typename struct>
+void func
 
 性能提升:
 内存池:在基线产品进程拉起来后,在用户接入前事情内存池,内存池大小按BHCA实验测试的工程化经验数据来划分的内存池(1k、5k、10k...4M)
