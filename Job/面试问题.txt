@@ -201,3 +201,8 @@ udp 校验和、psh urg含义、ppoe、怎么查服务器dns、端口映射
 (1)各种sizeof
 (2)coredump、内存泄漏怎么排查
 
+●智元汇1面
+(1)智能指针
+(2)select epoll区别
+(3)线程 join detach区别 底层原理
+(4)怎么获得一个线程的返回值
