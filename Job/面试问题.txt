@@ -205,4 +205,14 @@ udp 校验和、psh urg含义、ppoe、怎么查服务器dns、端口映射
 (1)智能指针
 (2)select epoll区别
 (3)线程 join detach区别 底层原理
+
 (4)怎么获得一个线程的返回值
+int pthread_join(pthread_t thread, void **retval);
+retval: 用户定义的指针，用来存储被等待线程的返回值
+(5)#include  <> "" 的区别
+.使用场景不同
+#include <> 一般用于包含系统头文件，诸如 stdlib.h 、stdio.h 、iostream等；
+#include "" 一般用于包含自定义头文件，如test.h、declare.h等
+.搜索路径
+""：先从当前用户目录下进行搜索，如果没有再搜索系统目录
+<>: 直接从系统类库目录里查找头文件
