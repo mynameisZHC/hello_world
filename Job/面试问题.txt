@@ -223,3 +223,4 @@ retval: 用户定义的指针，用来存储被等待线程的返回值
 (2)dynamic_cast<>
 (3)mutable的使用场景-延迟赋值
 (4)lambda捕获this指针
+(5)里式替换原则
