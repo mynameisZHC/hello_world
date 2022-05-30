@@ -1,0 +1,28 @@
+#include <iostream>
+#include<vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+void task2(const Row *rows, int nrows)
+{
+	vector<pair<int, int>> targetRows = {{ 1000, 10 }, { 1000, 50 }, { 2000, 10 }, { 2000, 50 }, { 3000, 10 }, { 3000, 50 } };
+	int index = 0;
+	int targetRowIndex = 0;
+	while (nrows && targetRowIndex < targetRows.size()) {
+		if (rows[index].a < targetRows[targetRowIndex].first) {
+			continue;
+		}
+		else if (rows[index].a > targetRows[targetRowIndex].first) {
+			targetRowIndex += 2;
+			continue;
+		}
+		else {
+			if (rows[index].b >= targetRows[targetRowIndex].second && rows[index].b < targetRows[targetRowIndex + 1].second) {
+				cout << rows[index].a << "," << rows[index].b << endl;
+			}
+		}
+		index++;
+		nrows--;
+	}
+}
