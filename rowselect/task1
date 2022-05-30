@@ -1,0 +1,45 @@
+#include <iostream>
+#include<vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+unordered_map<int, vector<int>> mapInfo;
+typedef struct Row
+{
+	int a;
+	int b;
+} Row;
+
+void ShowResult(int a, vector<int> &vec)
+{
+	if (vec.empty()) {
+		return;
+	}
+	sort(vec.begin(), vec.end());
+	// lower_bound升序数组中使用二分查找搜索第一个大于等于10的位置作为起始位置
+	int pos1 = lower_bound(vec.begin(), vec.end(), 10) - vec.begin();
+	// lower_bound升序数组中使用二分查找搜索第一个大于等于50的位置作为结束位置
+	int pos2 = lower_bound(vec.begin(), vec.end(), 50) - vec.begin();
+	// [pos1,pos2)左闭右开区间内数据即[10,50)范围内数据
+	for (int index = pos1; index < pos2; index++) {
+		cout << a << "," << vec[index] << endl;
+	}
+}
+
+void task1(const Row *rows, int nrows)
+{
+	// 使用unordered_map(哈希表)存储Row对应数据
+	int index = 0;
+	while (nrows) {
+		mapInfo[rows[index].a].push_back(rows[index].b);
+		index++;
+		nrows--;
+	}
+	vector<int> target = { 1000, 2000, 3000 };
+	// (a == 1000 || a == 2000 || a == 3000)
+	for (auto a : target) {
+		ShowResult(a, mapInfo[a]);
+	}
+
+}
