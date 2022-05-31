@@ -223,4 +223,16 @@ retval: 用户定义的指针，用来存储被等待线程的返回值
 (2)dynamic_cast<>
 (3)mutable的使用场景-延迟赋值
 (4)lambda捕获this指针
+class test {
+public:
+    void hello() {
+        cout << "test hello"<<endl;
+    };
+    void lambda() {
+        auto fun = [this] { // 捕获了 this 指针
+            this->hello(); // 这里 this 调用的就是 class test 的对象了
+        };
+        fun();
+    }
+};
 (5)里式替换原则
