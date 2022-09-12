@@ -1,2 +1,10 @@
 *ubuntu为什么没有/etc/inittab文件? 深究ubuntu的启动流程分析
 https://www.cnblogs.com/jackydalong/p/3437521.html
+*史上最详细linux启动过程讲解---没有之一
+https://cloud.tencent.com/developer/article/1114481
+*浅谈 Linux 系统启动过程
+https://bbs.huaweicloud.com/blogs/286544
+*openwrt The Boot Process
+https://openwrt.org/docs/techref/process.boot
+*从init进程逐步到/etc/init.d，整体分析Openwrt的软件启动机制
+https://blog.51cto.com/u_15346415/3678650
