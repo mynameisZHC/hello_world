@@ -1,1 +1,75 @@
+限速：
+1.限速proc文件：
+root@H3CCloudAP:/# cat /proc/RateLimit
+Ratelimit of 2.4G Info:
+WiFi-0  up mode: 0,     up cir: 0kbps,          down mode: 0,   down cir: 0kbps
+//创建
+proc_create("ratelimit", 0644, NULL, &stProc);
+static const struct file_operations stProc=
+{
+    .owner      = THIS_MODULE,
+    .read       = ReadHandle, // 读具体的限速参数
+    .write      = WriteHandle, 具体的参数没有通过这边写
+};
+具体参数是通过iwpriv rax1 set downlimitmode=1024的形式进行设置(底层是ioctl进行用户态到内核态的参数传递)
+2.具体限速地方
+ap_send_data_pkt(RTMP_ADAPTER *pAd, struct wifi_dev *wdev, PNDIS_PACKET pkt)\\下行 在AP发送无线报文的地方进行限制
+rx_802_3_data_frm_announce(RTMP_ADAPTER *pAd, MAC_TABLE_ENTRY *pEntry, RX_BLK *pRxBlk, struct wifi_dev *wdev) \\上行 在AP接受无线报文的地方进行限制
 
+3.具体的令牌桶限速算法
+RATELIMIT_Proc(BUCKET_S *pBucket, int ipkt_len)
+{
+/* 参数检查 */
+    if(NULL == pBucket || 0 == pBucket->iMode)
+    {
+        return 
+    }
+   
+    /* 报文长度大于令牌数，更新令牌数再做比较 */
+    if(ipkt_len > pBucket->lCurTockeNnum)
+    {
+        unsigned long ulCurTime = timenow();
+        unsigned long ulLastTimeAddToken=pBucket->ulSupTimeStamp;
+        
+        
+		/* 与上次报文来的时间相等，令牌增长为0，直接丢包 */
+		if(ulCurTime == ulLastTimeAddToken)
+        {
+            return H3CRATELIMIT_TYPE_LIMIT;
+        }
+        
+        else if(ulCurTime > ulLastTimeAddToken)
+        {
+            /* 更新令牌数和时间 */
+            unsigned  long ulTmpTime = ulCurTime - ulLastTimeAddToken;
+            pBucket->ulSupTimeStamp = ulCurTime;
+            pBucket->lCurTockeNnum += (long)(ulTmpTime * pBucket->lAddSpeed);
+         
+            if(pBucket->lCurTockeNnum > pBucket->lBucketSize || pBucket->lCurTockeNnum < 0)
+				pBucket->lCurTockeNnum = pBucket->lBucketSize; // 令牌数不超过桶大小
+
+            /*报文长度大于令牌桶中剩余令牌数 丢弃该报文 */
+            if(ipkt_len > pBucket->lCurTockeNnum)
+            {              
+                return LIMIT; // 
+            }
+            else
+            {
+                // 报文长度小于令牌桶中剩余令牌数 扣除此报文长度大小的令牌数后放行该报文
+                pBucket->lCurTockeNnum -= ipkt_len;
+                return PASS;
+            }
+            
+		}
+	} else {
+		报文长度小于令牌桶中剩余令牌数 扣除令牌数后放行
+		 pBucket->lCurTockeNnum -= ipkt_len;
+         return PASS;
+	}
+	---其实可以先计算新增加的令牌数后总的令牌数然后再和当前报文长度比较然后判断是否放行
+4.限速的作用是防止某个终端速度太大，占用了大部分空口的信道和带宽资源导致别的终端报文没有空口资源可用 导致别的终端速度太低
+5.限速会一定程度影响性能 因为发包的地方会进行是否发送的逻辑判断会消耗性能
+6.限速丢弃的报文的完整性TCP报文由TCP本身重传机制进行保证 UDP的话需要在用户态保证发包和ack的对应(如果没有的话也不会主动件保证 毕竟UDP本身也不保证可靠的传输) 
+7.参考
+https://cloud.tencent.com/developer/article/1711670
+https://www.cnblogs.com/crazymakercircle/p/15187184.html
