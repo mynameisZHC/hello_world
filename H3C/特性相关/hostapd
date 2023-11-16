@@ -13,6 +13,7 @@ https://blog.csdn.net/AngryDog1024/article/details/125463074
 https://blog.csdn.net/u012503786/article/details/79292211?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&utm_relevant_index=1
 https://blog.csdn.net/qq_38265137/article/details/90723195
 hostapd中的nl80211_copy.h对应于Linux内核中的linux-4.4.60\include\uapi\linux\nl80211.h
+hostapd认证的过程核心是由一个状态机
 
 
 eapol&radius：
@@ -27,7 +28,7 @@ EAP认证核心设计：
 
 RADIUS：远程认证拨入用户服务（Remote Authentication Dial-In User Service），RADIUS是用于网络访问服务器（NAS）和AAA服务器（AS）间通信的一种协议，实现对用户的认证，计费和授权。
 Radius协议应用系统主要是由3个部分组成：用户、Radius客户端 （NAS)、Radius服务器。
-Radius客户端和服务器之间基于UDP协议（端口号1812)通讯。
+Radius客户端和服务器之间基于UDP协议，认证端口是1812、计费端口是1813
 RADIUS报文中字段有两种编码方式，前4个字段的格式是固定的V格式，字段中只包含属性的值；报文中所带的众多属性（Attributes）使用的是TLV的编码格式 。
 认证过程：AC和服务器需要交互的4个主要的RADIUS消息：
 认证请求/认证接受/计费请求/计费接受
