@@ -1,0 +1,476 @@
+无线驱动接口：
+Linux无线驱动接口有两种标准接口，wext（Wireless Extensions无线扩展接口）和nl80211接口
+https://blog.csdn.net/liuxd3000/article/details/105949481
+https://zhuanlan.zhihu.com/p/82961389
+https://www.kancloud.cn/alex_wsc/android-wifi-nfc-gps/414054 ---Linux Wi-Fi编程API介绍
+
+cfg80211 mac80211 nl80211：
+https://codeantenna.com/a/oRviLutCif
+
+hostapd：
+https://www.kancloud.cn/digest/wlan/141028
+https://blog.csdn.net/AngryDog1024/article/details/125463074
+https://blog.csdn.net/u012503786/article/details/79292211?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&utm_relevant_index=1
+hostapd中的nl80211_copy.h对应于Linux内核中的linux-4.4.60\include\uapi\linux\nl80211.h
+
+
+eapol&radius：
+802.1x报文：
+客户端与设备之间，EAP协议报文使用EAPOL（EAP over LAN）封装格式，直接承载于LAN环境。
+EAP报文：
+设备与服务器间，EAP协议报文可以使用EAPOR（EAP over RADIUS）封装格式，承载于RADIUS协议中
+
+802.1x利用了EAP（Extensible Authentication Protocol ）协议来实现。了对多种认证方法（如EAP-TLS）的支持。EAP是用来传送认证消息的协议，本身并不是认证方法
+EAP认证核心设计：
+不断通过地EAP-Request/EAP-Response交互会话，完成认证方法协商、相互身份认证、加密算法选择、密钥计算等
+
+RADIUS：远程认证拨入用户服务（Remote Authentication Dial-In User Service），RADIUS是用于网络访问服务器（NAS）和AAA服务器（AS）间通信的一种协议，实现对用户的认证，计费和授权。
+Radius协议应用系统主要是由3个部分组成：用户、Radius客户端 （NAS)、Radius服务器。
+Radius客户端和服务器之间基于UDP协议（端口号1812)通讯。
+RADIUS报文中字段有两种编码方式，前4个字段的格式是固定的V格式，字段中只包含属性的值；报文中所带的众多属性（Attributes）使用的是TLV的编码格式 。
+认证过程：AC和服务器需要交互的4个主要的RADIUS消息：
+认证请求/认证接受/计费请求/计费接受
+
+//chatgpt
+你知道开源的hostapd模块是什么作用吗 
+2023-11-16 14:30:25
+
+是的，我了解 hostapd 模块的作用。
+
+hostapd 是一个开源的 Linux 守护程序，用于实现 Wi-Fi 访问点功能。它可以将无线网卡配置为热点，并创建基于 IEEE 802.11 的无线网络，使连接该热点的设备可以访问网络资源。此外，它还支持 WPA 和 WPA2 安全协议，能够提供安全的 Wi-Fi 连接。hostapd 模块通常用于嵌入式系统或路由器中，以便为连接到 Wi-Fi 网络的设备提供无线接入。
+
+hostapd 可以作为 Wi-Fi 访问点的服务器，通过使用它的配置文件来指定网络名称（SSID）、网络密码、使用的安全协议和其他网络参数。在启动时，hostapd 会监听无线网卡的接口，等待连接请求。一旦有设备请求连接，hostapd 就会将该设备加入网络，并验证其凭证（如密码）以确保安全连接。连接成功后，连接的设备就可以像在普通网络上一样访问网络资源。
+
+总的来说，hostapd 模块是为了让 Linux 系统能够充当 Wi-Fi 访问点而开发的一个开源的 Linux 守护程序，它提供了一种简单而有效的实现 Wi-Fi 访问点的方法。
+
+复制
+有用
+没用
+我
+ hostapd本身是个用户态进程，它是怎么知道某个终端是否连接到这个无线设备上了呢 
+2023-11-16 14:32:09
+
+对不起，我的前面回答有误。Hostapd 是一个用户空间的守护进程，它并不直接与硬件无线设备进行交互。事实上，Hostapd 通过与无线驱动程序（如 nl80211）进行通信，以管理物理无线设备并提供访问点功能。
+
+Hostapd 通过 nl80211 接口与 Linux 内核中的无线驱动程序通信。它使用 nl80211 接口可以实现以下功能：
+
+设置无线接口工作模式：Hostapd 可以与驱动程序通信以将无线接口设置为 AP 模式（访问点模式），从而充当 Wi-Fi 热点。
+
+设置 SSID 和认证参数：Hostapd 可以发送命令给驱动程序，以设置 Wi-Fi 网络的 SSID（网络名称）和认证参数（如密码、加密算法等）。
+
+接受和管理连接：Hostapd 通过 nl80211 接口监听来自无线设备的连接请求，并根据配置进行验证和管理。它可以接受连接请求，并将连接的设备添加到网络中。
+
+提供网络访问控制：Hostapd 可以配置不同的网络访问控制机制，如基于 MAC 地址的访问控制列表（ACL），以限制/允许特定设备连接到访问点。
+
+尽管 Hostapd 本身不直接处理无线设备，但它通过与无线驱动程序的通信，使得 Linux 系统能够实现 Wi-Fi 访问点功能，并提供对连接设备的管理和控制。
+
+复制
+有用
+没用
+我
+ 你说的这个 nl80211 接口是标准的协议接口吗？ 
+2023-11-16 14:33:37
+
+是的，nl80211 接口是一个标准的协议接口，它定义了一组命令和数据结构，用于与 Linux 内核中的无线子系统进行通信。事实上，"nl80211"即代表"Netlink 802.11"，是一个基于 netlink 的 API，用于通过 netlink 套接字（socket）传递消息和控制信息。
+
+通过 nl80211 接口，Hostapd 和其他 Wi-Fi 管理程序可以向内核发送命令，并接收来自内核的通知和事件。这些命令和通知可以包括：
+
+设置 Wi-Fi 接口的工作模式和参数（如信道、SSID、安全协议等）
+探索周围的 Wi-Fi 热点列表
+启动或停止 Wi-Fi 扫描
+启用或禁用 Wi-Fi 接口
+接受/管理连接请求
+获取无线网卡及其支持的功能信息
+通过使用 nl80211 接口，Hostapd 和其他 Wi-Fi 管理程序可以与 Linux 系统中的无线子系统进行通信，以控制无线网卡的行为，并在网络层面管理 Wi-Fi 连接。同时，由于 nl80211 是一个标准接口，因此应用程序和驱动程序供应商可以使用该接口来实现互操作性，并确保 Wi-Fi 硬件和软件能够在不同操作系统上协同工作。
+
+复制
+有用
+没用
+我
+ 那个nl80211是已经在现有的Linux内核源代码里面了吗 
+2023-11-16 14:51:12
+
+是的，nl80211 已经包含在现有的 Linux 内核源代码中。它是 Linux 内核中无线子系统的一部分，提供与无线设备和驱动程序之间进行通信的接口。nl80211 模块于 2007 年首次引入 Linux 内核，并通过连续的内核版本进行改进和更新。
+
+在 Linux 内核源代码的路径是 net/wireless/nl80211.c，其中包含了用于与无线设备进行通信的具体实现，包括与无线网卡进行交互、管理接口和配置参数等功能。此外，在 include/net/cfg80211.h 文件中定义了 nl80211 接口的命令和数据结构。
+
+因此，在 Linux 内核中可以找到与 nl80211 相关的代码，以便通过 Hostapd 或其他 Wi-Fi 管理程序与无线设备进行通信。
+
+复制
+有用
+没用
+我
+ 接着上面的问题，请问一下cfg80211、mac80211、nl80211各自的作用 
+2023-11-16 14:52:30
+
+cfg80211、mac80211 和 nl80211 是 Linux 内核中几个与无线网络相关的模块或接口。
+
+cfg80211：
+cfg80211 是一个通用的 Wi-Fi 配置和管理接口，它是无线核心子系统的一部分。cfg80211 提供了一组用于与无线驱动程序交互的接口，可以与无线设备进行通信，并配置和管理无线接口的参数。它还提供了扫描、连接管理、频谱管理、功率管理等功能。cfg80211 提供了用户空间程序（如 Hostapd）与内核之间的接口，使得用户空间程序可以控制和管理无线功能。
+
+mac80211：
+mac80211 是一个实现无线局域网的 MAC 层（媒体接入控制层）的模块。它主要负责处理无线帧（如管理帧、数据帧）的发送和接收。mac80211 提供了一个通用的接口，用于与不同无线设备和驱动程序进行通信，并向上层协议栈提供无线网络接口。它还负责帧的加解密、QoS（服务质量）管理、通道切换等功能。
+
+nl80211：
+nl80211 是一个基于 netlink 的 API，用于与内核中的无线子系统进行通信。它定义了一组命令和数据结构，用于通过 netlink 套接字与无线驱动程序进行通信。nl80211 提供了与无线设备交互的接口，使得用户空间程序（如 Hostapd）可以向内核发送命令或接收通知，来实现 Wi-Fi 配置、连接管理、扫描等功能。
+
+综上所述，cfg80211 提供了通用的无线接口配置和管理功能，mac80211 实现了无线局域网的 MAC 层，而 nl80211 则是通过 netlink 接口与无线子系统通信的 API。这些模块和接口共同协作，使得 Linux 内核能够实现完整的无线网络功能，并提供给用户空间程序使用。
+
+复制
+有用
+没用
+我
+ 那cfg80211、mac80211 和 nl80211各自在Linux内核的代码路径分别是什么 
+2023-11-16 14:54:15
+
+在 Linux 内核源代码中，cfg80211、mac80211 和 nl80211 的代码路径如下：
+
+cfg80211：cfg80211 模块的源代码位于 net/wireless/core.c。
+
+mac80211：mac80211 模块的源代码位于 net/mac80211/ 目录下。该目录包含了 mac80211 的核心功能实现和各种子模块。
+
+nl80211：nl80211 接口的源代码位于 net/wireless/nl80211.c。nl80211.c 文件定义了与无线网卡和驱动程序之间的通信所需的函数和数据结构。
+
+需要注意的是，这些模块可以在不同的内核版本中有所变化，因此具体的路径可能会有所不同。在 Linux 内核源代码树中，可以进入相应的目录查看以获取详细的实现代码。
+
+复制
+有用
+没用
+我
+ 你能举一个hostapd跟nl80211进行通信的实际例子吗 
+2023-11-16 15:08:27
+
+当 Hostapd 与 nl80211 进行通信时，它会使用 nl80211 接口向内核发送命令或接收通知，以实现 Wi-Fi 配置、连接管理等功能。下面是一个示例，展示了 Hostapd 如何使用 nl80211 接口来配置 Wi-Fi 接口的频道和功率。
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <linux/netlink.h>
+#include <linux/genetlink.h>
+
+#define MAX_PAYLOAD 1024
+
+int main() {
+    struct nlattr *nl_msg;
+    struct nl_sock *nl_sock;
+    struct nl_msg *nlmsg;
+    int nl80211_id;
+
+    nl_sock = nl_socket_alloc();
+    genl_connect(nl_sock);
+
+    // 获取 nl80211 的 ID
+    nl80211_id = genl_ctrl_resolve(nl_sock, "nl80211");
+
+    // 创建一个 NLMSG 的消息
+    nlmsg = nlmsg_alloc();
+    nl_msg = nla_nest_start(nlmsg, nl80211_id, NL80211_CMD_SET_WIPHY);
+    if (!nl_msg) {
+        printf("Failed to create nest attribute\n");
+        return -ENOMEM;
+    }
+
+    // 设置频道
+    if (nla_put_u32(nlmsg, NL80211_ATTR_WIPHY_FREQ, 2437) < 0) {
+        printf("Failed to add channel attribute\n");
+        return -ENOMEM;
+    }
+
+    // 设置功率
+    if (nla_put_u32(nlmsg, NL80211_ATTR_WIPHY_TX_POWER_LEVEL, 10) < 0) {
+        printf("Failed to add TX power attribute\n");
+        return -ENOMEM;
+    }
+
+    // 结束 nest 属性的创建
+    nla_nest_end(nlmsg, nl_msg);
+
+    // 发送消息并等待响应
+    int ret = nl_send_auto(nl_sock, nlmsg);
+    if (ret < 0) {
+        printf("Failed to send message: %s\n", strerror(-ret));
+        return ret;
+    }
+
+    // 等待响应
+    ret = nl_recvmsgs_default(nl_sock);
+    if (ret < 0) {
+        printf("Failed to receive message: %s\n", strerror(-ret));
+        return ret;
+    }
+
+    // 关闭套接字
+    nl_socket_free(nl_sock);
+
+    return 0;
+}
+ 复制
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <linux/netlink.h>
+#include <linux/genetlink.h>
+
+#define MAX_PAYLOAD 1024
+
+int main() {
+    struct nlattr *nl_msg;
+    struct nl_sock *nl_sock;
+    struct nl_msg *nlmsg;
+    int nl80211_id;
+
+    nl_sock = nl_socket_alloc();
+    genl_connect(nl_sock);
+
+    // 获取 nl80211 的 ID
+    nl80211_id = genl_ctrl_resolve(nl_sock, "nl80211");
+
+    // 创建一个 NLMSG 的消息
+    nlmsg = nlmsg_alloc();
+    nl_msg = nla_nest_start(nlmsg, nl80211_id, NL80211_CMD_SET_WIPHY);
+    if (!nl_msg) {
+        printf("Failed to create nest attribute\n");
+        return -ENOMEM;
+    }
+
+    // 设置频道
+    if (nla_put_u32(nlmsg, NL80211_ATTR_WIPHY_FREQ, 2437) < 0) {
+        printf("Failed to add channel attribute\n");
+        return -ENOMEM;
+    }
+
+    // 设置功率
+    if (nla_put_u32(nlmsg, NL80211_ATTR_WIPHY_TX_POWER_LEVEL, 10) < 0) {
+        printf("Failed to add TX power attribute\n");
+        return -ENOMEM;
+    }
+
+    // 结束 nest 属性的创建
+    nla_nest_end(nlmsg, nl_msg);
+
+    // 发送消息并等待响应
+    int ret = nl_send_auto(nl_sock, nlmsg);
+    if (ret < 0) {
+        printf("Failed to send message: %s\n", strerror(-ret));
+        return ret;
+    }
+
+    // 等待响应
+    ret = nl_recvmsgs_default(nl_sock);
+    if (ret < 0) {
+        printf("Failed to receive message: %s\n", strerror(-ret));
+        return ret;
+    }
+
+    // 关闭套接字
+    nl_socket_free(nl_sock);
+
+    return 0;
+}
+​
+以上示例演示了如何使用 nl80211 接口设置无线设备的频道和功率。通过创建一个 NL80211_CMD_SET_WIPHY 类型的消息，并添加频道和功率的属性，然后将该消息发送给内核。最后，等待内核的响应消息。
+
+这只是一个简单的示例，实际上可以使用 nl80211 接口执行更多的操作，如扫描无线网络、连接到特定的 Wi-Fi 网络、开启热点等。每个操作都有特定的命令和属性，通过构建相应的 nl80211 消息并向内核发送，可以完成相应的功能。
+
+复制
+有用
+没用
+我
+ 那Linux内核是怎么通知相关事件给hostapd的呢？比如某个终端接入了这个AP，内核态是怎么通知hostapd此终端接入了这个AO 
+2023-11-16 16:07:51
+
+当无线设备的某个客户端连接到 WiFi 网络时，内核会将此事件作为一个 nl80211 通知发送到已经注册了对应事件的用户空间程序，如 hostapd。这个过程基于 netlink 系统调用和一个注册了相应事件的回调函数。
+
+对于 hostapd 来说，它可以使用 netlink socket 去监听与处理内核事件。具体来说，hostapd 需要:
+
+创建一个 netlink socket，使用 socket() 系统调用。
+绑定 socket 到 nl80211 的 family，使用 bind() 系统调用。
+获取 nl80211 的 family ID，使用 nl_socket_get_local_port()。
+注册需要监听的事件，在调用 nl_socket_get_local_port() 之后，使用 nl_socket_add_memberships() 系统调用。
+监听内核事件，使用 nl_recvmsgs_default() 系统调用，该调用将会一直阻塞直到有一个事件到达。
+代码示例：
+
+void handle_nl80211_event(struct nl_msg *msg, void *arg) {
+    // 处理接收到的事件
+    ...
+}
+
+int main() {
+    struct nl_sock *nl_sock;
+    int nl80211_id;
+
+    nl_sock = nl_socket_alloc();
+    genl_connect(nl_sock);
+
+    // 获取 nl80211 的 ID
+    nl80211_id = genl_ctrl_resolve(nl_sock, "nl80211");
+
+    // 绑定 netlink socket
+    if (nl_socket_bind(nl_sock, (uint32_t)NL_SOCKET_AUTOPID, 0) < 0) {
+        printf("Failed to bind socket: %s\n", strerror(errno));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // 注册事件
+    int mcid;
+    struct nl_mcast_group *mcast_grp;
+    int ret = genl_ctrl_resolve_grp(nl_sock, "nl80211", "mlme", &mcast_grp);
+    if (ret < 0) {
+        printf("Failed to resolve genl multicast group: %s\n", strerror(-ret));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    mcid = mcast_grp->mc_id;
+    ret = nl_socket_add_membership(nl_sock, mcid);
+    if (ret < 0) {
+        printf("Failed to add membership: %s\n", strerror(-ret));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // 监听事件
+    while (1) {
+        ret = nl_recvmsgs_default(nl_sock);
+        if (ret < 0 && ret != -NLE_AGAIN) {
+            printf("Failed to handle message: %s\n", strerror(-ret));
+            nl_socket_free(nl_sock);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // 关闭套接字
+    nl_socket_free(nl_sock);
+
+    return 0;
+}
+ 复制
+void handle_nl80211_event(struct nl_msg *msg, void *arg) {
+    // 处理接收到的事件
+    ...
+}
+
+int main() {
+    struct nl_sock *nl_sock;
+    int nl80211_id;
+
+    nl_sock = nl_socket_alloc();
+    genl_connect(nl_sock);
+
+    // 获取 nl80211 的 ID
+    nl80211_id = genl_ctrl_resolve(nl_sock, "nl80211");
+
+    // 绑定 netlink socket
+    if (nl_socket_bind(nl_sock, (uint32_t)NL_SOCKET_AUTOPID, 0) < 0) {
+        printf("Failed to bind socket: %s\n", strerror(errno));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // 注册事件
+    int mcid;
+    struct nl_mcast_group *mcast_grp;
+    int ret = genl_ctrl_resolve_grp(nl_sock, "nl80211", "mlme", &mcast_grp);
+    if (ret < 0) {
+        printf("Failed to resolve genl multicast group: %s\n", strerror(-ret));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    mcid = mcast_grp->mc_id;
+    ret = nl_socket_add_membership(nl_sock, mcid);
+    if (ret < 0) {
+        printf("Failed to add membership: %s\n", strerror(-ret));
+        nl_socket_free(nl_sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // 监听事件
+    while (1) {
+        ret = nl_recvmsgs_default(nl_sock);
+        if (ret < 0 && ret != -NLE_AGAIN) {
+            printf("Failed to handle message: %s\n", strerror(-ret));
+            nl_socket_free(nl_sock);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // 关闭套接字
+    nl_socket_free(nl_sock);
+
+    return 0;
+}
+​
+当客户端连接此 AP 时，内核会发送一个 NL80211_CMD_NEW_STATION 事件通知给所有注册了此事件的程序。hostapd 接收到此事件后，会涉及到一系列的操作，比如分配并管理此连接客户端的信息。
+
+复制
+有用
+没用
+我
+ 能不能介绍一下使用hostapd来进行802.1X的流程 
+2023-11-16 16:52:17
+
+使用 hostapd 进行 802.1X 认证的流程如下：
+
+配置 hostapd: 编辑 hostapd 配置文件 (/etc/hostapd/hostapd.conf)，指定 EAP 方法和认证服务器的相关信息，例如 EAP 方法 (eap_server)、CA 证书 (ca_cert)、服务器证书 (server_cert)、私钥 (private_key) 等。
+
+启动 hostapd: 运行 hostapd -dd /etc/hostapd/hostapd.conf 命令启动 hostapd，并在调试模式下查看详细日志。
+
+客户端连接: 将客户端设备连接到有 hostapd 运行的 WiFi 热点。客户端会发送 802.1X 认证请求给 hostapd。
+
+hostapd 接收认证请求: hostapd 接收到客户端的 802.1X 认证请求，然后将其转发给认证服务器。
+
+与认证服务器进行 EAP 握手: hostapd 与认证服务器之间进行 EAP 握手过程。这通常涉及以下步骤：
+
+hostapd 发送 EAP-Request/Identity 到客户端，要求客户端发送其身份信息。
+客户端发送 EAP-Response/Identity 响应，包含其身份信息。
+hostapd 使用认证服务器的证书对客户端进行身份验证。
+hostapd 发送具体的 EAP-Request，要求客户端进行特定的认证流程（如 EAP-TLS、EAP-PEAP 等）。
+客户端发送响应（EAP-Response）进行认证流程。
+该过程循环进行，直到认证成功或失败。
+认证结果返回给客户端: hostapd 接收到认证服务器的响应，将认证结果发送给客户端。如果认证成功，hostapd 会向客户端发送 EAP-Success。如果认证失败，hostapd 会向客户端发送 EAP-Failure。
+
+网络访问授权: 一旦认证成功，hostapd 可以根据特定的网络策略（如 RADIUS 服务器配置）授权客户端访问网络。这可能涉及为客户端分配 IP 地址、设置网络策略、启用访问控制等。
+
+建立安全连接: hostapd 在认证成功后，可以建立一条安全连接，以确保连接的安全性和数据的保密性。这可能涉及使用密钥发起密钥握手（如 EAP-TLS 中的 TLS 握手）。
+
+需要注意的是，hostapd 只负责处理 802.1X 认证流程，而实际的认证和授权操作通常由专门的认证服务器（如 FreeRADIUS）来完成。hostapd 作为认证服务器和客户端之间的中间件起到转发和处理认证请求的作用。因此，在使用 hostapd 进行 802.1X 认证时，通常还需要配置和启动一个认证服务器来处理实际的认证和授权操作。
+
+复制
+有用
+没用
+我
+ hostapd做802.1X认证时，跟终端侧交互是使用的eapol格式的报文是吗 
+2023-11-16 17:08:43
+
+是的，hostapd 使用 EAPOL (EAP over LAN) 格式的报文与终端侧进行交互。EAPOL 是用于在本地局域网上通过以太网传输 EAP (Extensible Authentication Protocol) 的协议。
+
+EAPOL 报文的格式包括以太网帧的头部（Ethernet header）和 EAPOL 消息的主体部分。主体部分包含 EAPOL 特定的字段，如 EAPOL 版本、EAPOL 类型、EAPOL 长度等。其中 EAPOL 类型字段用于指示 EAPOL 消息的类型，例如 EAPOL-Start、EAPOL-Logoff、EAPOL-Key 等。EAPOL 报文中经常会携带 EAP 消息，以进行具体的认证过程。
+
+在 802.1X 认证过程中，hostapd 和终端侧会通过 EAPOL 报文进行认证协商和密钥交换。hostapd 发送 EAPOL-Start 请求，指示终端侧开始认证过程。终端侧则会按照 hostapd 的要求发送相应的 EAPOL 消息进行认证。此外，在认证成功后，hostapd 还会使用 EAPOL-Key 消息与终端侧进行密钥握手，以建立安全连接。
+
+总之，hostapd 使用 EAPOL 报文与终端侧交互，以实现 802.1X 认证过程。
+
+复制
+有用
+没用
+我
+ 那在内核态eapol报文是怎么被识别，又是怎么从内核态通知hostapd这是个eapol请求的报文呢 
+2023-11-16 17:11:57
+
+在内核态，当一个接口被设置为 WPA/WPA2 Enterprise 模式时，内核会把这个 interface 的数据包发送到 wpa_supplicant 进程或者 hostapd 进程来处理。这个过程是通过 Linux kernel 的 netfilter 模块实现的。Netfilter 可以看做是一个内核中的防火墙，用于实现对流量的过滤和修改。
+
+具体来说，当内核收到一个数据包时，它会让 netfilter 模块分析这个包，并按照事先设置好的规则进行处理。如果这个包符合 WPA/WPA2 Enterprise 认证的规则，那么它会被标记为可供 hostapd 处理的 EAPOL 报文。
+
+然后，内核会将这个 EAPOL 报文通过 netlink 机制（一种内核与用户态通信的机制）发送给 hostapd 进程。hostapd 会接收这个 EAPOL 报文，根据报文中的数据进行认证，然后将结果通过 EAPOL 报文的类别字段发送回内核，通知内核下一步应该如何处理这个数据包。
+
+总的来说，内核与 hostapd 之间的通信是通过 netfilter 和 netlink 机制实现的。Netfilter 方便地将符合特定规则的报文交给 hostapd 进行处理，而 netlink 则负责将处理结果返回给内核。
