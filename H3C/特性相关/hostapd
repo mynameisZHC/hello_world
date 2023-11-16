@@ -11,6 +11,7 @@ hostapd：
 https://www.kancloud.cn/digest/wlan/141028
 https://blog.csdn.net/AngryDog1024/article/details/125463074
 https://blog.csdn.net/u012503786/article/details/79292211?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-79292211-blog-5571018.t5_layer_eslanding_D_0&utm_relevant_index=1
+https://blog.csdn.net/qq_38265137/article/details/90723195
 hostapd中的nl80211_copy.h对应于Linux内核中的linux-4.4.60\include\uapi\linux\nl80211.h
 
 
