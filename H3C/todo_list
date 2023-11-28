@@ -19,6 +19,7 @@ Netlink 相对于系统调用，ioctl 以及 /proc 文件系统而言具有以�
 https://blog.csdn.net/dire_666/article/details/9639215
 
 4.stamgr代码和功能写个框架
+参见stamgr平台合一.xmind
 
 5.freenetconf中so动态加载，相比于静态加载的优缺点；优点：根据业务选择性加载，内存节省，库变化本身发热恩耳聪不需要重新编；缺点：？
 答：
