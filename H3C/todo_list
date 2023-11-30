@@ -49,3 +49,5 @@ https://blog.csdn.net/dire_666/article/details/9639215
 9.结合《Linux设备驱动开发》第1章内容，复习产品的代码结构和编译流程(toolchain\defconfig\modules\dtbs)
 
 10.看定时器epoll代码&日志输出大小如何限制
+
+11.查看代码看SDK驱动怎么注册probe相关的初始化函数
