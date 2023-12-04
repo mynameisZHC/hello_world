@@ -51,3 +51,5 @@ https://blog.csdn.net/dire_666/article/details/9639215
 10.看定时器epoll代码&日志输出大小如何限制
 
 11.查看代码看SDK驱动怎么注册probe相关的初始化函数
+
+12.看h3c内核的ko和直接编进内核的模块
