@@ -18,6 +18,7 @@ mtrace 工具的主要思路是在我们的调用内存分配和释放的函数�
 https://blog.csdn.net/u010280075/article/details/131428893
 
 ●死锁
+进程日志一段时间为更新 认为产生死锁 kill -6 pid (SIGABRT)主动让进程abort/coredump,产生core文件 然后使用gdb对core文件进行调试找到死锁位置
 小林图解系统
 死锁的4个必要条件
 .互斥条件：一个资源在某时刻内只能允许一个线程进行访问；
