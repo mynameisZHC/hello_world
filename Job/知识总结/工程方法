@@ -14,6 +14,7 @@ https://www.jianshu.com/p/e19aa43ddf9c
 .轻量级 mtrace 
 mtrace 工具的主要思路是在我们的调用内存分配和释放的函数中装载 “钩子（hook）” 函数，通过 “钩子（hook）” 函数打印的内存分配函数日志找到malloc free没有成对出现的代码位置进行排查
 包含头文件 设置日志信息 然后在main函数里面调用mtrace（） 执行过后查看test.log
+https://blog.csdn.net/u010280075/article/details/131428893
 
 ●死锁
 小林图解系统
