@@ -4,6 +4,7 @@
 https://blog.csdn.net/u014403008/article/details/54174109
 
 ●内存泄露
+先对比 /proc/pid/status中内存使用变化的情况VmSize\VmRSS\VmData数值的变化情况先确定是哪个或者哪些进程的内存使用明显增加，然后再使用下面说的工具
 工作中：
 .公司有valgrind memcheck的门禁检查 这个在你每次上库要合入版本master的时候都会进行各种场景的内存泄露用例检查
 .我们公司业务部门从编码规范上讲是不允许直接使用new delete的；一般是使用智能指针或者从内存池中已经申请好的堆内存 会大大减小内存泄露可能性
