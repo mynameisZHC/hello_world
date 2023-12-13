@@ -61,3 +61,7 @@ https://blog.csdn.net/dire_666/article/details/9639215
 15.内存一直上涨如何定位 看下日志中专门存内存相关的信息 应该是有专门存储每个后台进程对应使用内存的信息
 https://blog.csdn.net/qq_42170897/article/details/124286378
 https://blog.csdn.net/ibless/article/details/85123386
+
+16.包装task_struct那个定位手段
+
+17.根据H3C代码查看业务当中DTS\平台驱动\字符驱动等信息
