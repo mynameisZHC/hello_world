@@ -41,6 +41,7 @@ https://blog.csdn.net/dire_666/article/details/9639215
 根据具体的情况和需求，可以选择适合的方式来使用动态库。如果需要灵活性和动态更新，可以选择使用dlopen动态加载库；如果追求启动速度和更直观的编译连接，可以选择在Makefile中直接链接库。
 
 6.寻找对外可以用的chatgpt资源
+done
 
 7.3GPP协议复习(RRC、用户接入信令流程、基站和WiFi的异同)
 
@@ -55,8 +56,9 @@ https://blog.csdn.net/dire_666/article/details/9639215
 12.看h3c内核的ko和直接编进内核的模块
 
 13.内核态看工作队列相关代码(注意在工作队列回调函数中数据是怎么拿的)&结合liulei用户态下发配置文件的优化一起组织这个优化点
-
+done
 14.ELF格式文件
+done
 
 15.内存一直上涨如何定位 看下日志中专门存内存相关的信息 应该是有专门存储每个后台进程对应使用内存的信息
 https://blog.csdn.net/qq_42170897/article/details/124286378
