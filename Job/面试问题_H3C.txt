@@ -29,3 +29,8 @@ IP地址分为五个固定类：A类、B类、C类、D类、E类；
 ▲int a = -2;printf("%X",a);
 ▲wifi调优、协商速率、MCS与速率关系
 
+●天软信息 一面
+▲描述项目：stamgr进程实现了哪些功能
+▲QCA SDK版本
+Linux版4.4和5.4.238;
+OpenWrt最新版本23.05
