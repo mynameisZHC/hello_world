@@ -33,4 +33,4 @@ IP地址分为五个固定类：A类、B类、C类、D类、E类；
 ▲描述项目：stamgr进程实现了哪些功能
 ▲QCA SDK版本
 Linux版4.4和5.4.238;
-OpenWrt最新版本23.05
+OpenWrt版本 MTK 17.01\QCA 15.05;最新版本23.05
