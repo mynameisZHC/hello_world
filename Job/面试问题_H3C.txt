@@ -29,12 +29,13 @@ IP地址分为五个固定类：A类、B类、C类、D类、E类；
 ▲int a = -2;printf("%X",a);
 ▲wifi调优、协商速率、MCS与速率关系
 
-●天软信息 一面
+●天软信息 一面 2023.12.19
 ▲描述项目：stamgr进程实现了哪些功能
 ▲QCA SDK版本
 Linux版4.4和5.4.238;
 OpenWrt版本 MTK 17.01\QCA 15.05;最新版本23.05
 
-●tenda 一面
+●tenda 一面 2023.12.20
 ▲802.11 DIFS\SIFS GI
 ▲portal底层原理
+▲报文转发流程
